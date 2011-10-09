@@ -3,6 +3,8 @@ package GMP is
 	pragma Preelaborate;
 	pragma Linker_Options ("-lgmp");
 	
+	function Version return String;
+	
 	subtype Number_Base is Integer range 2 .. 16;
 	
 	type Exponent is new Long_Integer;

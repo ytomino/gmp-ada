@@ -1,5 +1,15 @@
+with C.string;
 package body GMP is
-
+	
+	function Version return String is
+		S : constant C.char_const_ptr := C.gmp.qqgmp_version;
+		Length : constant Natural := Natural (C.string.strlen (S));
+		Result : String (1 .. Length);
+		for Result'Address use S.all'Address;
+	begin
+		return Result;
+	end Version;
+	
 	function Default_Precision return Precision is
 	begin
 		return Precision (C.gmp.gmpf_get_default_prec);

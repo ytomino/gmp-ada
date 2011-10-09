@@ -1,4 +1,14 @@
+with C.string;
 package body MPC is
+	
+	function Version return String is
+		S : constant C.char_const_ptr := C.mpc.mpc_get_version;
+		Length : constant Natural := Natural (C.string.strlen (S));
+		Result : String (1 .. Length);
+		for Result'Address use S.all'Address;
+	begin
+		return Result;
+	end Version;
 	
 	function Compose (
 		Real_Rounding : MPFR.Rounding;

@@ -4,6 +4,8 @@ package MPFR is
 	pragma Preelaborate;
 	pragma Linker_Options ("-lmpfr");
 	
+	function Version return String;
+	
 	subtype Number_Base is GMP.Number_Base;
 	
 	type Precision is mod 2 ** GMP.Exponent'Size;

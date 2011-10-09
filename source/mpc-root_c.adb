@@ -55,7 +55,7 @@ package body MPC.Root_C is
 		Im : MPFR.Root_FR.MP_Float)
 		return MP_Complex
 	is
-		Im_Source : not null access constant C.mpfr.mpfr_struct :=
+		Im_Source : constant not null access constant C.mpfr.mpfr_struct :=
 			MPFR.Root_FR.Inside.Constant_Reference (Im'Unrestricted_Access);
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);

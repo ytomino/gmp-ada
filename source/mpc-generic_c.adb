@@ -1,4 +1,3 @@
-with Ada;
 with MPFR.Root_FR;
 package body MPC.Generic_C is
 	use type Imaginary_FR.MP_Float;

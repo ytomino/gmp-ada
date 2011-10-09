@@ -5,6 +5,8 @@ package MPC is
 	pragma Preelaborate;
 	pragma Linker_Options ("-lmpc");
 	
+	function Version return String;
+	
 	subtype Number_Base is GMP.Number_Base;
 	
 	type Rounding is private;
