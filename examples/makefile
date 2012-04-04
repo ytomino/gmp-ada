@@ -13,10 +13,6 @@ GNATMAKE=$(TARGET)-gnatmake
 GCC=$(TARGET)-gcc
 BUILDDIR=build-$(TARGET)
 IMPORTDIR:=import-$(TARGET)
-ifneq ($(findstring freebsd,$(TARGET)),)
-INCDIR=/usr/local/i686-pc-freebsd7/local/include
-LFLAGS=-L/usr/local/i686-pc-freebsd7/local/lib -lgnat
-endif
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
@@ -44,7 +40,7 @@ $(BUILDDIR):
 
 ifneq ($(IMPORTDIR),)
 $(IMPORTDIR): $(SOURCEDIR)/import.h
-	headmaster --to ada -gcc=$(GCC) $(addprefix -isystem ,$(INCDIR)) -p -D $(IMPORTDIR) $+
+	headmaster --to ada -gcc=$(GCC) $(HFLAGS) -p -D $(IMPORTDIR) $+
 endif
 
 clean:
