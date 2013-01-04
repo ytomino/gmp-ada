@@ -9,11 +9,11 @@ package body MPC.Root_C is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
 	begin
-		return Result : aliased MPFR.Root_FR.MP_Float (
+		return Result : MPFR.Root_FR.MP_Float (
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
 		do
 			Dummy := C.mpfr.mpfr_set4 (
-				MPFR.Root_FR.Inside.Reference (Result'Access),
+				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access),
 				Source (0)'Access,
 				C.mpfr.MPFR_RNDN,
 				C.mpfr.mpfr_sgn (Source (0)'Access));
@@ -25,11 +25,11 @@ package body MPC.Root_C is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
 	begin
-		return Result : aliased MPFR.Root_FR.MP_Float (
+		return Result : MPFR.Root_FR.MP_Float (
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
 		do
 			Dummy := C.mpfr.mpfr_set4 (
-				MPFR.Root_FR.Inside.Reference (Result'Access),
+				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access),
 				Source (0)'Access,
 				C.mpfr.MPFR_RNDN,
 				C.mpfr.mpfr_sgn (Source (0)'Access));

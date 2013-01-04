@@ -6,18 +6,18 @@ package body GMP.Q is
 	
 	function Num (X : MP_Rational) return Z.MP_Integer is
 	begin
-		return Result : aliased Z.MP_Integer do
+		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Access),
+				Z.Inside.Reference (Result'Unrestricted_Access),
 				X.Data.Raw (0).mp_num'Access);
 		end return;
 	end Num;
 	
 	function Den (X : MP_Rational) return Z.MP_Integer is
 	begin
-		return Result : aliased Z.MP_Integer do
+		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Access),
+				Z.Inside.Reference (Result'Unrestricted_Access),
 				X.Data.Raw (0).mp_den'Access);
 		end return;
 	end Den;

@@ -25,31 +25,38 @@ package body GMP is
 				C.unsigned_long_long'Min (
 					C.unsigned_long_long (C.unsigned_long'Last),
 					C.unsigned_long_long (Long_Long_Integer'Last)));
-		subtype si is Long_Long_Integer range
-			Long_Long_Integer (C.signed_long'First) ..
-			Long_Long_Integer (C.signed_long'Last);
+		op_in_ui : constant Boolean := op in ui;
 	begin
-		pragma Warnings (Off, "explicit membership test may be optimized away");
-		if op in ui then
+		if op_in_ui then
 			C.gmp.mpz_init_set_ui (rop, C.unsigned_long (op));
-		elsif op in si then
-			C.gmp.mpz_init_set_si (rop, C.signed_long (op));
 		else
-			C.gmp.mpz_init_set_si (
-				rop,
-				C.signed_long (C.Shift_Right_Arithmetic (
-					C.signed_long_long (op),
-					C.unsigned_long'Size)));
-			C.gmp.mpz_mul_2exp (
-				rop,
-				rop,
-				C.unsigned_long'Size);
-			C.gmp.mpz_add_ui (
-				rop,
-				rop,
-				C.unsigned_long'Mod (op));
+			declare
+				subtype si is Long_Long_Integer range
+					Long_Long_Integer (C.signed_long'First) ..
+					Long_Long_Integer (C.signed_long'Last);
+				pragma Warnings (Off); -- always True in 64bit environment
+				op_in_si : constant Boolean := op in si;
+				pragma Warnings (On);
+			begin
+				if op_in_si then
+					C.gmp.mpz_init_set_si (rop, C.signed_long (op));
+				else
+					C.gmp.mpz_init_set_si (
+						rop,
+						C.signed_long (C.Shift_Right_Arithmetic (
+							C.signed_long_long (op),
+							C.unsigned_long'Size)));
+					C.gmp.mpz_mul_2exp (
+						rop,
+						rop,
+						C.unsigned_long'Size);
+					C.gmp.mpz_add_ui (
+						rop,
+						rop,
+						C.unsigned_long'Mod (op));
+				end if;
+			end;
 		end if;
-		pragma Warnings (On, "explicit membership test may be optimized away");
 	end mpz_init_set_Long_Long_Integer;
 	
 end GMP;
