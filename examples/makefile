@@ -3,40 +3,52 @@ SOURCEDIR=../source
 HOST=$(shell gcc -dumpmachine)
 TARGET=$(HOST)
 
+VERSION=$(shell gcc -dumpversion)
+
+BUILDDIR=$(TARGET).build
+
 ifeq ($(TARGET),$(HOST))
 GNATMAKE=gnatmake
 GCC=$(dir $(shell which $(GNATMAKE)))gcc
-BUILDDIR=build
-IMPORTDIR:=import
+BINLN=bin
 else
 GNATMAKE=$(TARGET)-gnatmake
 GCC=$(TARGET)-gcc
-BUILDDIR=build-$(TARGET)
-IMPORTDIR:=import-$(TARGET)
+BINLN=
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
-DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)
+DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
-IMPORTDIR:=
+IMPORTDIR=
 MFLAGS=--RTS=$(abspath $(DRAKE_RTSDIR))
+else
+IMPORTDIR=$(BUILDDIR)/import
+MFLAGS=-I$(abspath $(IMPORTDIR))
 endif
+
+EXAMPLES=$(basename $(filter-out b~%,$(wildcard *.adb)))
 
 CFLAGS=-gnata -gnatwa -gnatyy-3chbs
 
-.PHONY: all clean
+.PHONY: all clean $(EXAMPLES)
 
-all: $(BUILDDIR)/images $(BUILDDIR)/random $(BUILDDIR)/stream $(BUILDDIR)/test_pi $(BUILDDIR)/test_pi_op $(BUILDDIR)/versions
+all: $(BUILDDIR)/images $(BUILDDIR)/random $(BUILDDIR)/stream $(BUILDDIR)/test_pi $(BUILDDIR)/test_pi_op $(BUILDDIR)/versions $(BINLN)
 
 $(BUILDDIR)/test_pi: test_pi.adb $(BUILDDIR) $(IMPORTDIR) $(wildcard $(SOURCEDIR)/*)
-	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) -I../$(IMPORTDIR) $(CFLAGS) ../$< -largs $(LFLAGS) -lgmp
+	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) $(CFLAGS) ../$< -largs $(LFLAGS) -lgmp
 
 $(BUILDDIR)/%: %.adb $(BUILDDIR) $(IMPORTDIR) $(wildcard $(SOURCEDIR)/*)
-	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) -I../$(IMPORTDIR) $(CFLAGS) ../$< -largs $(LFLAGS)
+	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) $(CFLAGS) ../$< -largs $(LFLAGS)
 
 $(BUILDDIR):
 	mkdir $(BUILDDIR)
+
+$(BINLN): $(BUILDDIR)
+	ln -s $(BUILDDIR) $(BINLN)
+
+$(EXAMPLES): %: $(BUILDDIR)/%
 
 ifneq ($(IMPORTDIR),)
 $(IMPORTDIR): $(SOURCEDIR)/import.h
@@ -44,4 +56,4 @@ $(IMPORTDIR): $(SOURCEDIR)/import.h
 endif
 
 clean:
-	-rm -rf build* import*
+	-rm -rf *.build bin
