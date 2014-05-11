@@ -1,3 +1,4 @@
+pragma Ada_2012;
 package body GMP.Random is
 	use type C.unsigned_long;
 
@@ -58,7 +59,7 @@ package body GMP.Random is
 		Gen.State := From_State;
 	end Reset;
 	
-	function Random (Gen : not null access Generator) return Long_Integer is
+	function Random (Gen : aliased in out Generator) return Long_Integer is
 		pragma Suppress (Overflow_Check);
 		pragma Suppress (Range_Check);
 	begin
@@ -85,7 +86,7 @@ package body GMP.Random is
 	
 	package body Discrete_Random is
 		
-		function Random (Gen : not null access Generator) return Result_Subtype is
+		function Random (Gen : aliased in out Generator) return Result_Subtype is
 		begin
 			return Result_Subtype'Val (
 				C.gmp.gmp_urandomm_ui (

@@ -13,7 +13,7 @@ package body MPC.Root_C is
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
 		do
 			Dummy := C.mpfr.mpfr_set4 (
-				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access),
+				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access.all),
 				Source (0)'Access,
 				C.mpfr.MPFR_RNDN,
 				C.mpfr.mpfr_sgn (Source (0)'Access));
@@ -29,7 +29,7 @@ package body MPC.Root_C is
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
 		do
 			Dummy := C.mpfr.mpfr_set4 (
-				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access),
+				MPFR.Root_FR.Inside.Reference (Result'Unrestricted_Access.all),
 				Source (0)'Access,
 				C.mpfr.MPFR_RNDN,
 				C.mpfr.mpfr_sgn (Source (0)'Access));
@@ -43,8 +43,8 @@ package body MPC.Root_C is
 		return Result : MP_Complex (Re.Precision, Im.Precision) do
 			Dummy := C.mpc.mpc_set_fr_fr (
 				Result.Data.Raw (0)'Access,
-				MPFR.Root_FR.Inside.Constant_Reference (Re'Unrestricted_Access),
-				MPFR.Root_FR.Inside.Constant_Reference (Im'Unrestricted_Access),
+				MPFR.Root_FR.Inside.Constant_Reference (Re'Unrestricted_Access.all),
+				MPFR.Root_FR.Inside.Constant_Reference (Im'Unrestricted_Access.all),
 				C.mpc.MPC_RNDNN);
 		end return;
 	end Compose;
@@ -56,7 +56,7 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Im_Source : constant not null access constant C.mpfr.mpfr_struct :=
-			MPFR.Root_FR.Inside.Constant_Reference (Im'Unrestricted_Access);
+			MPFR.Root_FR.Inside.Constant_Reference (Im'Unrestricted_Access.all);
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
 	begin

@@ -1,3 +1,4 @@
+pragma Ada_2012;
 with Ada.Finalization;
 private with C.gmp;
 package GMP.Random is
@@ -19,12 +20,12 @@ package GMP.Random is
 	function Reset (From_State : State) return Generator;
 	procedure Reset (Gen : in out Generator; From_State : State);
 	
-	function Random (Gen : not null access Generator) return Long_Integer;
+	function Random (Gen : aliased in out Generator) return Long_Integer;
 	
 	generic
 		type Result_Subtype is (<>);
 	package Discrete_Random is
-		function Random (Gen : not null access Generator) return Result_Subtype;
+		function Random (Gen : aliased in out Generator) return Result_Subtype;
 	end Discrete_Random;
 	
 private

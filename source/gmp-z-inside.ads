@@ -1,12 +1,13 @@
+pragma Ada_2012;
 with Ada.Streams;
 with C.gmp;
 package GMP.Z.Inside is
 	pragma Preelaborate;
 	
-	function Reference (X : not null access MP_Integer)
+	function Reference (X : aliased in out MP_Integer)
 		return not null access C.gmp.mpz_struct;
 	pragma Inline (Reference);
-	function Constant_Reference (X : not null access constant MP_Integer)
+	function Constant_Reference (X : aliased in MP_Integer)
 		return not null access constant C.gmp.mpz_struct;
 	pragma Inline (Constant_Reference);
 	

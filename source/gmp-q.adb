@@ -8,7 +8,7 @@ package body GMP.Q is
 	begin
 		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Unrestricted_Access),
+				Z.Inside.Reference (Result'Unrestricted_Access.all),
 				X.Data.Raw (0).mp_num'Access);
 		end return;
 	end Num;
@@ -17,7 +17,7 @@ package body GMP.Q is
 	begin
 		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Unrestricted_Access),
+				Z.Inside.Reference (Result'Unrestricted_Access.all),
 				X.Data.Raw (0).mp_den'Access);
 		end return;
 	end Den;
@@ -180,10 +180,10 @@ package body GMP.Q is
 		do
 			C.gmp.mpz_init_set (
 				Result.Data.Raw (0).mp_num'Access,
-				Z.Inside.Constant_Reference (Numerator'Unrestricted_Access));
+				Z.Inside.Constant_Reference (Numerator'Unrestricted_Access.all));
 			C.gmp.mpz_init_set (
 				Result.Data.Raw (0).mp_den'Access,
-				Z.Inside.Constant_Reference (Denominator'Unrestricted_Access));
+				Z.Inside.Constant_Reference (Denominator'Unrestricted_Access.all));
 			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
 		end return;
 	end "/";
