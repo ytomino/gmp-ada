@@ -78,6 +78,14 @@ package MPC.Root_C is
 		Rounding : MPC.Rounding)
 		return MP_Complex;
 	
+	function Power (
+		Left : MP_Complex;
+		Right : Integer;
+		Real_Precision : MPFR.Precision;
+		Imaginary_Precision : MPFR.Precision;
+		Rounding : MPC.Rounding)
+		return MP_Complex;
+	
 private
 	
 	-- [gcc 4.6] avoiding bug

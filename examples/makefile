@@ -34,7 +34,7 @@ CFLAGS=-gnata -gnatwa -gnatyy-3chbs
 
 .PHONY: all clean $(EXAMPLES)
 
-all: $(BUILDDIR)/images $(BUILDDIR)/random $(BUILDDIR)/stream $(BUILDDIR)/test_pi $(BUILDDIR)/test_pi_op $(BUILDDIR)/versions $(BINLN)
+all: $(BUILDDIR)/check_sig $(BUILDDIR)/images $(BUILDDIR)/random $(BUILDDIR)/stream $(BUILDDIR)/test_pi $(BUILDDIR)/test_pi_op $(BUILDDIR)/versions $(BINLN)
 
 $(BUILDDIR)/test_pi: test_pi.adb $(BUILDDIR) $(IMPORTDIR) $(wildcard $(SOURCEDIR)/*)
 	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) $(CFLAGS) ../$< -largs $(LFLAGS) -lgmp

@@ -57,6 +57,12 @@ package GMP.Root_F is
 		Precision : GMP.Precision)
 		return MP_Float;
 	
+	function Power (
+		Left : MP_Float;
+		Right : Integer;
+		Precision : GMP.Precision)
+		return MP_Float;
+	
 private
 	
 	-- [gcc 4.6] avoiding bug

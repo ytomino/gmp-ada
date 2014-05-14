@@ -455,10 +455,10 @@ package body MPFR.Root_FR is
 		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_pow_ui (
+			Dummy := C.mpfr.mpfr_pow_si (
 				Result.Data.Raw (0)'Access,
 				Left.Data.Raw (0)'Access,
-				C.unsigned_long (Right),
+				C.signed_long (Right),
 				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Power;

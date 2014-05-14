@@ -43,4 +43,9 @@ package body GMP.Generic_F is
 		return Divide (Left, Right, Precision);
 	end "/";
 	
+	function "**" (Left : MP_Float; Right : Integer) return MP_Float is
+	begin
+		return Power (Left, Right, Precision);
+	end "**";
+	
 end GMP.Generic_F;

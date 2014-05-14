@@ -64,6 +64,9 @@ package MPC.Generic_C is
 	function "/" (Left, Right : MP_Complex) return MP_Complex;
 	pragma Inline ("/");
 	
+	function "**" (Left : MP_Complex; Right : Integer) return MP_Complex;
+	pragma Inline ("**");
+	
 	function "*" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Imaginary;
 	pragma Inline ("*");

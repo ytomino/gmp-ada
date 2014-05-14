@@ -265,6 +265,26 @@ package body MPC.Root_C is
 		end return;
 	end Divide;
 	
+	function Power (
+		Left : MP_Complex;
+		Right : Integer;
+		Real_Precision : MPFR.Precision;
+		Imaginary_Precision : MPFR.Precision;
+		Rounding : MPC.Rounding)
+		return MP_Complex
+	is
+		Dummy : C.signed_int;
+		pragma Unreferenced (Dummy);
+	begin
+		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
+			Dummy := C.mpc.mpc_pow_si (
+				Result.Data.Raw (0)'Access,
+				Left.Data.Raw (0)'Access,
+				C.signed_long (Right),
+				C.mpc.mpc_rnd_t (Rounding));
+		end return;
+	end Power;
+	
 	function Create (
 		Real_Precision : MPFR.Precision;
 		Imaginary_Precision : MPFR.Precision)

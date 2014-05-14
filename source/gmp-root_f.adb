@@ -219,6 +219,34 @@ package body GMP.Root_F is
 		end return;
 	end Divide;
 	
+	function Power (
+		Left : MP_Float;
+		Right : Integer;
+		Precision : GMP.Precision)
+		return MP_Float is
+	begin
+		return Result : MP_Float (Precision) do
+			if Right >= 0 then
+				C.gmp.mpf_pow_ui (
+					Result.Data.Raw (0)'Access,
+					Left.Data.Raw (0)'Access,
+					C.unsigned_long'Mod (Right));
+			else
+				declare
+					Den : aliased C.gmp.mpf_t := (others => (others => <>));
+				begin
+					C.gmp.mpf_init2 (Den (0)'Access, C.gmp.mp_bitcnt_t (Precision));
+					C.gmp.mpf_pow_ui (
+						Den (0)'Access,
+						Left.Data.Raw (0)'Access,
+						C.unsigned_long'Mod (Right));
+					C.gmp.mpf_ui_div (Result.Data.Raw (0)'Access, 1, Den (0)'Access);
+					C.gmp.mpf_clear (Den (0)'Access);
+				end;
+			end if;
+		end return;
+	end Power;
+	
 	function Create (Precision : GMP.Precision) return Controlled is
 	begin
 		return Result : Controlled := (Ada.Finalization.Controlled with Raw => <>) do

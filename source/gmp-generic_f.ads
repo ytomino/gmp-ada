@@ -40,4 +40,7 @@ package GMP.Generic_F is
 	function "/" (Left, Right : MP_Float) return MP_Float;
 	pragma Inline ("/");
 	
+	function "**" (Left : MP_Float; Right : Integer) return MP_Float;
+	pragma Inline ("**");
+
 end GMP.Generic_F;

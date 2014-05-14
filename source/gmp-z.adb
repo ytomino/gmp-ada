@@ -139,6 +139,16 @@ package body GMP.Z is
 		end return;
 	end "/";
 	
+	function "**" (Left : MP_Integer; Right : Natural) return MP_Integer is
+	begin
+		return Result : MP_Integer do
+			C.gmp.mpz_pow_ui (
+				Result.Data.Raw (0)'Access,
+				Left.Data.Raw (0)'Access,
+				C.unsigned_long'Mod (Right));
+		end return;
+	end "**";
+	
 	function Copy_Sign (Value, Sign : MP_Integer) return MP_Integer is
 	begin
 		if (C.gmp.qmpz_cmp_si (Value.Data.Raw (0)'Access, 0) < 0) =

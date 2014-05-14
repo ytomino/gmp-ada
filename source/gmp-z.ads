@@ -27,6 +27,8 @@ package GMP.Z is
 	
 	function "/" (Left, Right : MP_Integer) return MP_Integer;
 	
+	function "**" (Left : MP_Integer; Right : Natural) return MP_Integer;
+	
 	function Copy_Sign (Value, Sign : MP_Integer) return MP_Integer;
 	function Copy_Sign (Value : MP_Integer; Sign : Integer) return MP_Integer;
 	function Copy_Sign (Value : Integer; Sign : MP_Integer) return Integer;

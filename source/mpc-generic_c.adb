@@ -124,6 +124,16 @@ package body MPC.Generic_C is
 			Rounding => Rounding);
 	end "/";
 	
+	function "**" (Left : MP_Complex; Right : Integer) return MP_Complex is
+	begin
+		return Power (
+			Left,
+			Right,
+			Real_Precision => Real_FR.Precision,
+			Imaginary_Precision => Imaginary_FR.Precision,
+			Rounding => Rounding);
+	end "**";
+	
 	function "*" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Imaginary
 	is

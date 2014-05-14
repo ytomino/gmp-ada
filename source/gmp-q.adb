@@ -188,6 +188,40 @@ package body GMP.Q is
 		end return;
 	end "/";
 	
+	function "**" (Left : MP_Rational; Right : Integer) return MP_Rational is
+	begin
+		return Result : MP_Rational do
+			if Right >= 0 then
+				declare
+					E : constant C.unsigned_long := C.unsigned_long'Mod (Right);
+				begin
+					C.gmp.mpz_pow_ui (
+						Result.Data.Raw (0).mp_num'Access,
+						Left.Data.Raw (0).mp_num'Access,
+						E);
+					C.gmp.mpz_pow_ui (
+						Result.Data.Raw (0).mp_den'Access,
+						Left.Data.Raw (0).mp_den'Access,
+						E);
+				end;
+			else
+				declare
+					E : constant C.unsigned_long := C.unsigned_long'Mod (-Right);
+				begin
+					C.gmp.mpz_pow_ui (
+						Result.Data.Raw (0).mp_num'Access,
+						Left.Data.Raw (0).mp_den'Access,
+						E);
+					C.gmp.mpz_pow_ui (
+						Result.Data.Raw (0).mp_den'Access,
+						Left.Data.Raw (0).mp_num'Access,
+						E);
+				end;
+			end if;
+			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
+		end return;
+	end "**";
+	
 	overriding procedure Initialize (Object : in out Controlled) is
 	begin
 		C.gmp.mpq_init (Object.Raw (0)'Access);

@@ -33,6 +33,8 @@ package GMP.Q is
 	function "/" (Left, Right : Long_Long_Integer) return MP_Rational;
 	function "/" (Left, Right : Z.MP_Integer) return MP_Rational;
 	
+	function "**" (Left : MP_Rational; Right : Integer) return MP_Rational;
+	
 private
 	
 	type Controlled is new Ada.Finalization.Controlled with record
