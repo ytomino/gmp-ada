@@ -67,7 +67,7 @@ private
 	
 	-- [gcc 4.6] avoiding bug
 	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.mpf_t;
+		Raw : aliased C.gmp.mpf_t := (others => (others => <>));
 	end record;
 	
 	function Create (Precision : GMP.Precision) return Controlled;

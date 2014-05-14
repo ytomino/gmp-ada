@@ -229,7 +229,7 @@ package body GMP.Z is
 				C.void_const_ptr (Data'Address));
 			if Size > 0 and then Data (1) >= 16#80# then
 				declare
-					X : C.gmp.mpz_t;
+					X : C.gmp.mpz_t := (others => (others => <>));
 				begin
 					C.gmp.mpz_init_set_si (X (0)'Access, -1);
 					C.gmp.mpz_mul_2exp (
@@ -285,8 +285,8 @@ package body GMP.Z is
 			end if;
 		else
 			declare
-				Item_1 : C.gmp.mpz_t;
-				X : C.gmp.mpz_t;
+				Item_1 : C.gmp.mpz_t := (others => (others => <>));
+				X : C.gmp.mpz_t := (others => (others => <>));
 			begin
 				C.gmp.mpz_init (Item_1 (0)'Access);
 				C.gmp.mpz_sub_ui (Item_1 (0)'Access, Item, 1);

@@ -223,7 +223,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Right2 : C.mpfr.mpfr_t;
+		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
@@ -277,7 +277,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Right2 : C.mpfr.mpfr_t;
+		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
@@ -303,7 +303,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Left2 : C.mpfr.mpfr_t;
+		Left2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Left2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
@@ -347,7 +347,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Right2 : C.mpfr.mpfr_t;
+		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
@@ -401,7 +401,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Right2 : C.mpfr.mpfr_t;
+		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
@@ -427,7 +427,7 @@ package body MPFR.Root_FR is
 	is
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
-		Left2 : C.mpfr.mpfr_t;
+		Left2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Left2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));

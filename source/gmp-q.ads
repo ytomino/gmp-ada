@@ -38,7 +38,7 @@ package GMP.Q is
 private
 	
 	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.mpq_t;
+		Raw : aliased C.gmp.mpq_t := (others => (others => (others => <>)));
 	end record;
 	
 	overriding procedure Initialize (Object : in out Controlled);

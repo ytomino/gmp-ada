@@ -90,7 +90,8 @@ private
 	
 	-- [gcc 4.6] avoiding bug
 	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.mpc.mpc_t;
+		Raw : aliased C.mpc.mpc_t :=
+			(others => (others => (others => (others => <>))));
 	end record;
 	
 	function Create (

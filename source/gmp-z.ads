@@ -36,7 +36,7 @@ package GMP.Z is
 private
 	
 	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.mpz_t;
+		Raw : aliased C.gmp.mpz_t := (others => (others => <>));
 	end record;
 	
 	overriding procedure Initialize (Object : in out Controlled);
