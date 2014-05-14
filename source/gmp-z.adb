@@ -235,7 +235,7 @@ package body GMP.Z is
 					C.gmp.mpz_mul_2exp (
 						X (0)'Access,
 						X (0)'Access,
-						C.unsigned_long (Size) * Ada.Streams.Stream_Element'Size);
+						C.unsigned_long'Mod (Size) * Ada.Streams.Stream_Element'Size);
 					C.gmp.mpz_ior (
 						Item,
 						Item,
@@ -294,7 +294,7 @@ package body GMP.Z is
 				C.gmp.mpz_mul_2exp (
 					X (0)'Access,
 					X (0)'Access,
-					(C.unsigned_long (C.gmp.mpz_sizeinbase (Item_1 (0)'Access, 2)) + 
+					(C.unsigned_long'Mod (C.gmp.mpz_sizeinbase (Item_1 (0)'Access, 2)) +
 					Ada.Streams.Stream_Element'Size - 1)
 					/ Ada.Streams.Stream_Element'Size
 					* Ada.Streams.Stream_Element'Size);

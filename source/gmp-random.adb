@@ -35,7 +35,9 @@ package body GMP.Random is
 	begin
 		return Result : State := (Ada.Finalization.Controlled with Raw => <>) do
 			C.gmp.gmp_randinit_default (Result.Raw (0)'Access);
-			C.gmp.gmp_randseed_ui (Result.Raw (0)'Access, C.unsigned_long (Initiator));
+			C.gmp.gmp_randseed_ui (
+				Result.Raw (0)'Access,
+				C.unsigned_long'Mod (Initiator));
 		end return;
 	end Initialize;
 	

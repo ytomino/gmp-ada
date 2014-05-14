@@ -28,7 +28,7 @@ package body GMP is
 		op_in_ui : constant Boolean := op in ui;
 	begin
 		if op_in_ui then
-			C.gmp.mpz_init_set_ui (rop, C.unsigned_long (op));
+			C.gmp.mpz_init_set_ui (rop, C.unsigned_long'Mod (op));
 		else
 			declare
 				subtype si is Long_Long_Integer range
