@@ -261,8 +261,6 @@ package body GMP.Root_F is
 	
 	overriding procedure Adjust (Object : in out Controlled) is
 		Source : constant C.gmp.mpf_t := Object.Raw; -- move
-		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		C.gmp.mpf_init_set (
 			Object.Raw (0)'Access,
