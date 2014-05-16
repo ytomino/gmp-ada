@@ -15,9 +15,10 @@ package MPC is
 		Real_Rounding : MPFR.Rounding;
 		Imaginary_Rounding : MPFR.Rounding)
 		return Rounding;
-	pragma Inline (Compose);
 	
 	function Default_Rounding return Rounding;
+	
+	pragma Inline (Compose);
 	
 private
 	

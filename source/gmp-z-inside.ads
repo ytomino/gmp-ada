@@ -6,9 +6,10 @@ package GMP.Z.Inside is
 	
 	function Reference (X : aliased in out MP_Integer)
 		return not null access C.gmp.mpz_struct;
-	pragma Inline (Reference);
 	function Constant_Reference (X : aliased in MP_Integer)
 		return not null access constant C.gmp.mpz_struct;
+	
+	pragma Inline (Reference);
 	pragma Inline (Constant_Reference);
 	
 	procedure Read (

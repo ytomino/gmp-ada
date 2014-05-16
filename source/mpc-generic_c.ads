@@ -7,6 +7,7 @@ package MPC.Generic_C is
 	pragma Preelaborate;
 	
 	function Rounding return MPC.Rounding;
+	
 	pragma Inline (Rounding);
 	
 	type MP_Complex is new Root_C.MP_Complex (
@@ -16,18 +17,21 @@ package MPC.Generic_C is
 	type MP_Imaginary is private;
 	
 	function i return MP_Imaginary;
-	pragma Inline (i);
 	function j return MP_Imaginary renames i;
 	
+	pragma Inline (i);
+	
 	function Re (X : MP_Complex) return Real_FR.MP_Float;
-	pragma Inline (Re);
 	function Im (X : MP_Complex) return Imaginary_FR.MP_Float;
+	
+	pragma Inline (Re);
 	pragma Inline (Im);
 	
 	function Compose (
 		Re : Real_FR.MP_Float;
 		Im : Imaginary_FR.MP_Float)
 		return MP_Complex;
+	
 	pragma Inline (Compose);
 	
 	-- formatting
@@ -36,11 +40,12 @@ package MPC.Generic_C is
 		Value : MP_Complex;
 		Base : Number_Base := 10)
 		return String;
-	pragma Inline (Image);
 	function Value (
 		Image : String;
 		Base : Number_Base := 10)
 		return MP_Complex;
+	
+	pragma Inline (Image);
 	pragma Inline (Value);
 	
 	-- relational operators of complex are inherited
@@ -48,41 +53,42 @@ package MPC.Generic_C is
 	-- unary adding operators of complex
 	
 	function "+" (Right : MP_Complex) return MP_Complex;
-	pragma Inline ("+");
 	function "-" (Right : MP_Complex) return MP_Complex;
+	
+	pragma Inline ("+");
 	pragma Inline ("-");
 	
 	-- binary adding operators of complex
 	
 	function "+" (Left, Right : MP_Complex) return MP_Complex;
-	pragma Inline ("+");
 	function "+" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Complex;
-	pragma Inline ("+");
-	
 	function "-" (Left, Right : MP_Complex) return MP_Complex;
-	pragma Inline ("-");
 	function "-" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Complex;
+	
+	pragma Inline ("+");
 	pragma Inline ("-");
 	
 	-- multiplying operators of complex
 	
 	function "*" (Left, Right : MP_Complex) return MP_Complex;
-	pragma Inline ("*");
-	
 	function "/" (Left, Right : MP_Complex) return MP_Complex;
+	
+	pragma Inline ("*");
 	pragma Inline ("/");
 	
 	-- highest precedence operators of complex
 	
 	function "**" (Left : MP_Complex; Right : Integer) return MP_Complex;
+	
 	pragma Inline ("**");
 	
 	-- multiplying operators of imaginary
 	
 	function "*" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Imaginary;
+	
 	pragma Inline ("*");
 	
 private
