@@ -19,6 +19,9 @@ package GMP.Z.Inside is
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : not null access constant C.gmp.mpz_struct);
 	
+	pragma Inline (Read); -- renamed
+	pragma Inline (Write); -- renamed
+	
 private	
 	
 	procedure Read (
