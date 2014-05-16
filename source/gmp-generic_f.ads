@@ -6,11 +6,15 @@ package GMP.Generic_F is
 	
 	type MP_Float is new Root_F.MP_Float (Precision);
 	
+	-- conversions
+	
 	function To_MP_Float (X : Long_Float) return MP_Float;
 	pragma Inline (To_MP_Float);
 	
 --	function To_Long_Float (X : MP_Float) return Long_Float;
 	-- this function is inherited
+	
+	-- formatting
 	
 --	function Image (
 --		Value : MP_Float;
@@ -23,10 +27,16 @@ package GMP.Generic_F is
 		return MP_Float;
 	pragma Inline (Value);
 	
+	-- relational operators are inherited
+	
+	-- unary adding operators
+	
 	function "+" (Right : MP_Float) return MP_Float;
 	pragma Inline ("+");
 	function "-" (Right : MP_Float) return MP_Float;
 	pragma Inline ("-");
+	
+	-- binary adding operators
 	
 	function "+" (Left, Right : MP_Float) return MP_Float;
 	pragma Inline ("+");
@@ -34,11 +44,15 @@ package GMP.Generic_F is
 	function "-" (Left, Right : MP_Float) return MP_Float;
 	pragma Inline ("-");
 	
+	-- multiplying operators
+	
 	function "*" (Left, Right : MP_Float) return MP_Float;
 	pragma Inline ("*");
 	
 	function "/" (Left, Right : MP_Float) return MP_Float;
 	pragma Inline ("/");
+	
+	-- highest precedence operators
 	
 	function "**" (Left : MP_Float; Right : Integer) return MP_Float;
 	pragma Inline ("**");

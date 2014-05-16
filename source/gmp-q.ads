@@ -9,10 +9,14 @@ package GMP.Q is
 	function Num (X : MP_Rational) return Z.MP_Integer;
 	function Den (X : MP_Rational) return Z.MP_Integer;
 	
+	-- formatting
+	
 	function Image (Value : MP_Rational; Base : Number_Base := 10)
 		return String;
 	function Value (Image : String; Base : Number_Base := 10)
 		return MP_Rational;
+	
+	-- relational operators
 	
 	function "=" (Left, Right : MP_Rational) return Boolean;
 	function "<" (Left, Right : MP_Rational) return Boolean;
@@ -20,18 +24,26 @@ package GMP.Q is
 	function "<=" (Left, Right : MP_Rational) return Boolean;
 	function ">=" (Left, Right : MP_Rational) return Boolean;
 	
+	-- unary adding operators
+	
 	function "+" (Right : MP_Rational) return MP_Rational;
 	function "-" (Right : MP_Rational) return MP_Rational;
+	
+	-- binary adding operators
 	
 	function "+" (Left, Right : MP_Rational) return MP_Rational;
 	
 	function "-" (Left, Right : MP_Rational) return MP_Rational;
+	
+	-- multiplying operators
 	
 	function "*" (Left, Right : MP_Rational) return MP_Rational;
 	
 	function "/" (Left, Right : MP_Rational) return MP_Rational;
 	function "/" (Left, Right : Long_Long_Integer) return MP_Rational;
 	function "/" (Left, Right : Z.MP_Integer) return MP_Rational;
+	
+	-- highest precedence operators
 	
 	function "**" (Left : MP_Rational; Right : Integer) return MP_Rational;
 	

@@ -5,10 +5,16 @@ package GMP.Z is
 	
 	type MP_Integer is private;
 	
+	-- conversions
+	
 	function To_MP_Integer (X : Long_Long_Integer) return MP_Integer;
+	
+	-- formatting
 	
 	function Image (Value : MP_Integer; Base : Number_Base := 10) return String;
 	function Value (Image : String; Base : Number_Base := 10) return MP_Integer;
+	
+	-- relational operators
 	
 	function "=" (Left, Right : MP_Integer) return Boolean;
 	function "<" (Left, Right : MP_Integer) return Boolean;
@@ -16,18 +22,28 @@ package GMP.Z is
 	function "<=" (Left, Right : MP_Integer) return Boolean;
 	function ">=" (Left, Right : MP_Integer) return Boolean;
 	
+	-- unary adding operators
+	
 	function "+" (Right : MP_Integer) return MP_Integer;
 	function "-" (Right : MP_Integer) return MP_Integer;
+	
+	-- binary adding operators
 	
 	function "+" (Left, Right : MP_Integer) return MP_Integer;
 	
 	function "-" (Left, Right : MP_Integer) return MP_Integer;
 	
+	-- multiplying operators
+	
 	function "*" (Left, Right : MP_Integer) return MP_Integer;
 	
 	function "/" (Left, Right : MP_Integer) return MP_Integer;
 	
+	-- highest precedence operators
+	
 	function "**" (Left : MP_Integer; Right : Natural) return MP_Integer;
+	
+	-- subprograms of a scalar type
 	
 	function Copy_Sign (Value, Sign : MP_Integer) return MP_Integer;
 	function Copy_Sign (Value : MP_Integer; Sign : Integer) return MP_Integer;

@@ -30,6 +30,8 @@ package MPC.Generic_C is
 		return MP_Complex;
 	pragma Inline (Compose);
 	
+	-- formatting
+	
 	function Image (
 		Value : MP_Complex;
 		Base : Number_Base := 10)
@@ -41,10 +43,16 @@ package MPC.Generic_C is
 		return MP_Complex;
 	pragma Inline (Value);
 	
+	-- relational operators of complex are inherited
+	
+	-- unary adding operators of complex
+	
 	function "+" (Right : MP_Complex) return MP_Complex;
 	pragma Inline ("+");
 	function "-" (Right : MP_Complex) return MP_Complex;
 	pragma Inline ("-");
+	
+	-- binary adding operators of complex
 	
 	function "+" (Left, Right : MP_Complex) return MP_Complex;
 	pragma Inline ("+");
@@ -58,14 +66,20 @@ package MPC.Generic_C is
 		return MP_Complex;
 	pragma Inline ("-");
 	
+	-- multiplying operators of complex
+	
 	function "*" (Left, Right : MP_Complex) return MP_Complex;
 	pragma Inline ("*");
 	
 	function "/" (Left, Right : MP_Complex) return MP_Complex;
 	pragma Inline ("/");
 	
+	-- highest precedence operators of complex
+	
 	function "**" (Left : MP_Complex; Right : Integer) return MP_Complex;
 	pragma Inline ("**");
+	
+	-- multiplying operators of imaginary
 	
 	function "*" (Left : Long_Long_Float; Right : MP_Imaginary)
 		return MP_Imaginary;
