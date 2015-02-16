@@ -30,16 +30,34 @@ package GMP.Random is
 	
 private
 	
-	type State is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.gmp_randstate_t := (
-			others => (
-				mp_seed => (others => (others => <>)),
-				others => <>));
-	end record;
+	package Controlled is
+		
+		type State is private;
+		
+		function Reference (Item : in out State)
+			return not null access C.gmp.gmp_randstate_struct;
+		function Constant_Reference (Item : State)
+			return not null access constant C.gmp.gmp_randstate_struct;
+		
+		pragma Inline (Reference);
+		pragma Inline (Constant_Reference);
+		
+	private
+		
+		type State is new Ada.Finalization.Controlled with record
+			Raw : aliased C.gmp.gmp_randstate_t := (
+				others => (
+					mp_seed => (others => (others => <>)),
+					others => <>));
+		end record;
+		
+		overriding procedure Initialize (Object : in out State);
+		overriding procedure Adjust (Object : in out State);
+		overriding procedure Finalize (Object : in out State);
+		
+	end Controlled;
 	
-	overriding procedure Initialize (Object : in out State);
-	overriding procedure Adjust (Object : in out State);
-	overriding procedure Finalize (Object : in out State);
+	type State is new Controlled.State;
 	
 	type Generator is limited record
 		State : GMP.Random.State;

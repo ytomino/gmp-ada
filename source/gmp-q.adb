@@ -1,3 +1,4 @@
+pragma Ada_2012;
 with GMP.Z.Inside;
 with C.string;
 package body GMP.Q is
@@ -8,8 +9,8 @@ package body GMP.Q is
 	begin
 		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Unrestricted_Access.all),
-				X.Data.Raw (0).mp_num'Access);
+				Z.Inside.Reference (Result),
+				Constant_Reference (X).mp_num'Access);
 		end return;
 	end Num;
 	
@@ -17,8 +18,8 @@ package body GMP.Q is
 	begin
 		return Result : Z.MP_Integer do
 			C.gmp.mpz_set (
-				Z.Inside.Reference (Result'Unrestricted_Access.all),
-				X.Data.Raw (0).mp_den'Access);
+				Z.Inside.Reference (Result),
+				Constant_Reference (X).mp_den'Access);
 		end return;
 	end Den;
 	
@@ -27,16 +28,16 @@ package body GMP.Q is
 	is
 		Buffer_Size : constant C.size_t :=
 			C.gmp.mpz_sizeinbase (
-				Value.Data.Raw (0).mp_num'Access,
+				Constant_Reference (Value).mp_num'Access,
 				C.signed_int (Base)) + 
 			C.gmp.mpz_sizeinbase (
-				Value.Data.Raw (0).mp_den'Access,
+				Constant_Reference (Value).mp_den'Access,
 				C.signed_int (Base)) + 2;
 		Buffer : C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr := C.gmp.mpq_get_str (
 			Buffer (Buffer'First)'Access,
 			C.signed_int (Base),
-			Value.Data.Raw (0)'Access);
+			Constant_Reference (Value));
 		pragma Unreferenced (Dummy);
 		Length : constant Natural :=
 			Natural (C.string.strlen (Buffer (Buffer'First)'Access));
@@ -55,49 +56,49 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			if C.gmp.mpq_set_str (
-				Result.Data.Raw (0)'Access,
+				Reference (Result),
 				C_Image (C_Image'First)'Access,
 				C.signed_int (Base)) < 0
 			then
 				raise Constraint_Error;
 			end if;
-			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
+			C.gmp.mpq_canonicalize (Reference (Result));
 		end return;
 	end Value;
 	
 	function "=" (Left, Right : MP_Rational) return Boolean is
 	begin
 		return C.gmp.mpq_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) = 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) = 0;
 	end "=";
 	
 	function "<" (Left, Right : MP_Rational) return Boolean is
 	begin
 		return C.gmp.mpq_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) < 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) < 0;
 	end "<";
 	
 	function ">" (Left, Right : MP_Rational) return Boolean is
 	begin
 		return C.gmp.mpq_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) > 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) > 0;
 	end ">";
 	
 	function "<=" (Left, Right : MP_Rational) return Boolean is
 	begin
 		return C.gmp.mpq_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) <= 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) <= 0;
 	end "<=";
 	
 	function ">=" (Left, Right : MP_Rational) return Boolean is
 	begin
 		return C.gmp.mpq_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) >= 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) >= 0;
 	end ">=";
 	
 	function "+" (Right : MP_Rational) return MP_Rational is
@@ -109,8 +110,8 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			C.gmp.mpq_neg (
-				Result.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Right));
 		end return;
 	end "-";
 	
@@ -118,9 +119,9 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			C.gmp.mpq_add (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end "+";
 	
@@ -128,9 +129,9 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			C.gmp.mpq_sub (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end "-";
 	
@@ -138,9 +139,9 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			C.gmp.mpq_mul (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end "*";
 	
@@ -148,9 +149,9 @@ package body GMP.Q is
 	begin
 		return Result : MP_Rational do
 			C.gmp.mpq_div (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end "/";
 	
@@ -158,16 +159,14 @@ package body GMP.Q is
 		Numerator : Long_Long_Integer renames Left;
 		Denominator : Long_Long_Integer renames Right;
 	begin
-		return Result : MP_Rational :=
-			(Data => (Ada.Finalization.Controlled with Raw => <>))
-		do
-			mpz_init_set_Long_Long_Integer (
-				Result.Data.Raw (0).mp_num'Access,
+		return Result : MP_Rational do
+			mpz_set_Long_Long_Integer (
+				Reference (Result).mp_num'Access,
 				Numerator);
-			mpz_init_set_Long_Long_Integer (
-				Result.Data.Raw (0).mp_den'Access,
+			mpz_set_Long_Long_Integer (
+				Reference (Result).mp_den'Access,
 				Denominator);
-			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
+			C.gmp.mpq_canonicalize (Reference (Result));
 		end return;
 	end "/";
 	
@@ -175,16 +174,14 @@ package body GMP.Q is
 		Numerator : Z.MP_Integer renames Left;
 		Denominator : Z.MP_Integer renames Right;
 	begin
-		return Result : MP_Rational :=
-			(Data => (Ada.Finalization.Controlled with Raw => <>))
-		do
-			C.gmp.mpz_init_set (
-				Result.Data.Raw (0).mp_num'Access,
-				Z.Inside.Constant_Reference (Numerator'Unrestricted_Access.all));
-			C.gmp.mpz_init_set (
-				Result.Data.Raw (0).mp_den'Access,
-				Z.Inside.Constant_Reference (Denominator'Unrestricted_Access.all));
-			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
+		return Result : MP_Rational do
+			C.gmp.mpz_set (
+				Reference (Result).mp_num'Access,
+				Z.Inside.Constant_Reference (Numerator));
+			C.gmp.mpz_set (
+				Reference (Result).mp_den'Access,
+				Z.Inside.Constant_Reference (Denominator));
+			C.gmp.mpq_canonicalize (Reference (Result));
 		end return;
 	end "/";
 	
@@ -196,12 +193,12 @@ package body GMP.Q is
 					E : constant C.unsigned_long := C.unsigned_long'Mod (Right);
 				begin
 					C.gmp.mpz_pow_ui (
-						Result.Data.Raw (0).mp_num'Access,
-						Left.Data.Raw (0).mp_num'Access,
+						Reference (Result).mp_num'Access,
+						Constant_Reference (Left).mp_num'Access,
 						E);
 					C.gmp.mpz_pow_ui (
-						Result.Data.Raw (0).mp_den'Access,
-						Left.Data.Raw (0).mp_den'Access,
+						Reference (Result).mp_den'Access,
+						Constant_Reference (Left).mp_den'Access,
 						E);
 				end;
 			else
@@ -209,51 +206,67 @@ package body GMP.Q is
 					E : constant C.unsigned_long := C.unsigned_long'Mod (-Right);
 				begin
 					C.gmp.mpz_pow_ui (
-						Result.Data.Raw (0).mp_num'Access,
-						Left.Data.Raw (0).mp_den'Access,
+						Reference (Result).mp_num'Access,
+						Constant_Reference (Left).mp_den'Access,
 						E);
 					C.gmp.mpz_pow_ui (
-						Result.Data.Raw (0).mp_den'Access,
-						Left.Data.Raw (0).mp_num'Access,
+						Reference (Result).mp_den'Access,
+						Constant_Reference (Left).mp_num'Access,
 						E);
 				end;
 			end if;
-			C.gmp.mpq_canonicalize (Result.Data.Raw (0)'Access);
+			C.gmp.mpq_canonicalize (Reference (Result));
 		end return;
 	end "**";
 	
-	overriding procedure Initialize (Object : in out Controlled) is
-	begin
-		C.gmp.mpq_init (Object.Raw (0)'Access);
-	end Initialize;
-	
-	overriding procedure Adjust (Object : in out Controlled) is
-		Source : constant C.gmp.mpq_t := Object.Raw;
-	begin
-		C.gmp.mpq_init (Object.Raw (0)'Access);
-		C.gmp.mpq_set (Object.Raw (0)'Access, Source (0)'Access);
-	end Adjust;
-	
-	overriding procedure Finalize (Object : in out Controlled) is
-	begin
-		C.gmp.mpq_clear (Object.Raw (0)'Access);
-	end Finalize;
+	package body Controlled is
+		
+		function Reference (Item : in out MP_Rational)
+			return not null access C.gmp.mpq_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Reference;
+		
+		function Constant_Reference (Item : MP_Rational)
+			return not null access constant C.gmp.mpq_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Constant_Reference;
+		
+		overriding procedure Initialize (Object : in out MP_Rational) is
+		begin
+			C.gmp.mpq_init (Object.Raw (0)'Access);
+		end Initialize;
+		
+		overriding procedure Adjust (Object : in out MP_Rational) is
+			Source : constant C.gmp.mpq_t := Object.Raw;
+		begin
+			C.gmp.mpq_init (Object.Raw (0)'Access);
+			C.gmp.mpq_set (Object.Raw (0)'Access, Source (0)'Access);
+		end Adjust;
+		
+		overriding procedure Finalize (Object : in out MP_Rational) is
+		begin
+			C.gmp.mpq_clear (Object.Raw (0)'Access);
+		end Finalize;
+		
+	end Controlled;
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : out MP_Rational) is
 	begin
-		C.gmp.mpq_clear (Item.Data.Raw (0)'Access);
-		Z.Inside.Read (Stream, Item.Data.Raw (0).mp_num'Access);
-		Z.Inside.Read (Stream, Item.Data.Raw (0).mp_den'Access);
+		C.gmp.mpq_clear (Reference (Item));
+		Z.Inside.Read (Stream, Reference (Item).mp_num'Access);
+		Z.Inside.Read (Stream, Reference (Item).mp_den'Access);
 	end Read;
 	
 	procedure Write (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : in MP_Rational) is
 	begin
-		Z.Inside.Write (Stream, Item.Data.Raw (0).mp_num'Access);
-		Z.Inside.Write (Stream, Item.Data.Raw (0).mp_den'Access);
+		Z.Inside.Write (Stream, Constant_Reference (Item).mp_num'Access);
+		Z.Inside.Write (Stream, Constant_Reference (Item).mp_den'Access);
 	end Write;
 	
 end GMP.Q;

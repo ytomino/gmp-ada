@@ -1,3 +1,4 @@
+pragma Ada_2012;
 with MPFR.Root_FR;
 private with Ada.Finalization;
 package MPC.Root_C is
@@ -88,26 +89,53 @@ package MPC.Root_C is
 	
 private
 	
-	-- [gcc 4.6] avoiding bug
-	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.mpc.mpc_t :=
-			(others => (others => (others => (others => <>))));
-	end record;
+	package Controlled is
+		
+		type MP_Complex is private;
+		
+		function Create (
+			Real_Precision : MPFR.Precision;
+			Imaginary_Precision : MPFR.Precision)
+			return MP_Complex;
+		
+		function Reference (Item : in out MP_Complex)
+			return not null access C.mpc.mpc_struct;
+		function Constant_Reference (Item : MP_Complex)
+			return not null access constant C.mpc.mpc_struct;
+		
+		pragma Inline (Reference);
+		pragma Inline (Constant_Reference);
+		
+	private
+		
+		type MP_Complex is new Ada.Finalization.Controlled with record
+			Raw : aliased C.mpc.mpc_t :=
+				(others => (others => (others => (others => <>))));
+		end record;
+		
+		overriding procedure Initialize (Object : in out MP_Complex);
+		overriding procedure Adjust (Object : in out MP_Complex);
+		overriding procedure Finalize (Object : in out MP_Complex);
+		
+	end Controlled;
 	
-	function Create (
-		Real_Precision : MPFR.Precision;
-		Imaginary_Precision : MPFR.Precision)
-		return Controlled;
-	
-	overriding procedure Initialize (Object : in out Controlled);
-	overriding procedure Adjust (Object : in out Controlled);
-	overriding procedure Finalize (Object : in out Controlled);
-	
+	-- [gcc-4.8/4.9/5.0] derivation with discriminants makes many problems.
 	type MP_Complex (
 		Real_Precision : MPFR.Precision;
 		Imaginary_Precision : MPFR.Precision) is
 	record
-		Data : Controlled := Create (Real_Precision, Imaginary_Precision);
+		Data : Controlled.MP_Complex :=
+			Controlled.Create (Real_Precision, Imaginary_Precision);
 	end record;
+	
+	-- instead of derivation
+	
+	function Reference (Item : in out MP_Complex)
+		return not null access C.mpc.mpc_struct;
+	function Constant_Reference (Item : MP_Complex)
+		return not null access constant C.mpc.mpc_struct;
+	
+	pragma Inline (Reference);
+	pragma Inline (Constant_Reference);
 	
 end MPC.Root_C;

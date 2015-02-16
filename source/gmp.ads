@@ -21,7 +21,7 @@ private
 		Precision'Last /= Precision (C.gmp.mp_bitcnt_t'Last),
 		"please adjust Precision as mp_bitcnt_t");
 	
-	procedure mpz_init_set_Long_Long_Integer (
+	procedure mpz_set_Long_Long_Integer (
 		rop : not null access C.gmp.mpz_struct;
 		op : in Long_Long_Integer);
 	

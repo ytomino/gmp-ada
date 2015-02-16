@@ -1,3 +1,4 @@
+pragma Ada_2012;
 with GMP.Z;
 private with Ada.Finalization;
 private with Ada.Streams;
@@ -49,17 +50,31 @@ package GMP.Q is
 	
 private
 	
-	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.mpq_t := (others => (others => (others => <>)));
-	end record;
+	package Controlled is
+		
+		type MP_Rational is private;
+		
+		function Reference (Item : in out MP_Rational)
+			return not null access C.gmp.mpq_struct;
+		function Constant_Reference (Item : MP_Rational)
+			return not null access constant C.gmp.mpq_struct;
+		
+		pragma Inline (Reference);
+		pragma Inline (Constant_Reference);
+		
+	private
+		
+		type MP_Rational is new Ada.Finalization.Controlled with record
+			Raw : aliased C.gmp.mpq_t := (others => (others => (others => <>)));
+		end record;
+		
+		overriding procedure Initialize (Object : in out MP_Rational);
+		overriding procedure Adjust (Object : in out MP_Rational);
+		overriding procedure Finalize (Object : in out MP_Rational);
 	
-	overriding procedure Initialize (Object : in out Controlled);
-	overriding procedure Adjust (Object : in out Controlled);
-	overriding procedure Finalize (Object : in out Controlled);
+	end Controlled;
 	
-	type MP_Rational is record
-		Data : Controlled;
-	end record;
+	type MP_Rational is new Controlled.MP_Rational;
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;

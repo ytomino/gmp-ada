@@ -1,3 +1,4 @@
+pragma Ada_2012;
 private with Ada.Finalization;
 private with Ada.Streams;
 package GMP.Z is
@@ -51,17 +52,31 @@ package GMP.Z is
 	
 private
 	
-	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.gmp.mpz_t := (others => (others => <>));
-	end record;
+	package Controlled is
+		
+		type MP_Integer is private;
+		
+		function Reference (Item : in out MP_Integer)
+			return not null access C.gmp.mpz_struct;
+		function Constant_Reference (Item : MP_Integer)
+			return not null access constant C.gmp.mpz_struct;
+		
+		pragma Inline (Reference);
+		pragma Inline (Constant_Reference);
+		
+	private
+		
+		type MP_Integer is new Ada.Finalization.Controlled with record
+			Raw : aliased C.gmp.mpz_t := (others => (others => <>));
+		end record;
+		
+		overriding procedure Initialize (Object : in out MP_Integer);
+		overriding procedure Adjust (Object : in out MP_Integer);
+		overriding procedure Finalize (Object : in out MP_Integer);
+		
+	end Controlled;
 	
-	overriding procedure Initialize (Object : in out Controlled);
-	overriding procedure Adjust (Object : in out Controlled);
-	overriding procedure Finalize (Object : in out Controlled);
-	
-	type MP_Integer is record
-		Data : Controlled;
-	end record;
+	type MP_Integer is new Controlled.MP_Integer;
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;

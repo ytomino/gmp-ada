@@ -15,7 +15,7 @@ package body GMP is
 		return Precision (C.gmp.gmpf_get_default_prec);
 	end Default_Precision;
 	
-	procedure mpz_init_set_Long_Long_Integer (
+	procedure mpz_set_Long_Long_Integer (
 		rop : not null access C.gmp.mpz_struct;
 		op : in Long_Long_Integer)
 	is
@@ -28,7 +28,7 @@ package body GMP is
 		op_in_ui : constant Boolean := op in ui;
 	begin
 		if op_in_ui then
-			C.gmp.mpz_init_set_ui (rop, C.unsigned_long'Mod (op));
+			C.gmp.mpz_set_ui (rop, C.unsigned_long'Mod (op));
 		else
 			declare
 				subtype si is Long_Long_Integer range
@@ -39,9 +39,9 @@ package body GMP is
 				pragma Warnings (On);
 			begin
 				if op_in_si then
-					C.gmp.mpz_init_set_si (rop, C.signed_long (op));
+					C.gmp.mpz_set_si (rop, C.signed_long (op));
 				else
-					C.gmp.mpz_init_set_si (
+					C.gmp.mpz_set_si (
 						rop,
 						C.signed_long (C.Shift_Right_Arithmetic (
 							C.signed_long_long (op),
@@ -57,6 +57,6 @@ package body GMP is
 				end if;
 			end;
 		end if;
-	end mpz_init_set_Long_Long_Integer;
+	end mpz_set_Long_Long_Integer;
 	
 end GMP;

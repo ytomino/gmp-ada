@@ -24,8 +24,9 @@ package body GMP.Random is
 	
 	function Initialize return State is
 	begin
-		return Result : State := (Ada.Finalization.Controlled with Raw => <>) do
-			C.gmp.gmp_randinit_default (Result.Raw (0)'Access);
+		return Result : State do
+			pragma Unreferenced (Result);
+			null;
 		end return;
 	end Initialize;
 	
@@ -33,10 +34,9 @@ package body GMP.Random is
 		pragma Suppress (Overflow_Check);
 		pragma Suppress (Range_Check);
 	begin
-		return Result : State := (Ada.Finalization.Controlled with Raw => <>) do
-			C.gmp.gmp_randinit_default (Result.Raw (0)'Access);
+		return Result : State do
 			C.gmp.gmp_randseed_ui (
-				Result.Raw (0)'Access,
+				Reference (Result),
 				C.unsigned_long'Mod (Initiator));
 		end return;
 	end Initialize;
@@ -66,25 +66,9 @@ package body GMP.Random is
 		pragma Suppress (Range_Check);
 	begin
 		return Long_Integer (C.gmp.gmp_urandomb_ui (
-			Gen.State.Raw (0)'Access,
+			Reference (Gen.State),
 			Long_Integer'Size));
 	end Random;
-	
-	overriding procedure Initialize (Object : in out State) is
-	begin
-		C.gmp.gmp_randinit_default (Object.Raw (0)'Access);
-	end Initialize;
-	
-	overriding procedure Adjust (Object : in out State) is
-		Old : constant C.gmp.gmp_randstate_t := Object.Raw;
-	begin
-		C.gmp.gmp_randinit_set (Object.Raw (0)'Access, Old (0)'Access);
-	end Adjust;
-	
-	overriding procedure Finalize (Object : in out State) is
-	begin
-		C.gmp.gmp_randclear (Object.Raw (0)'Access);
-	end Finalize;
 	
 	package body Discrete_Random is
 		
@@ -92,11 +76,43 @@ package body GMP.Random is
 		begin
 			return Result_Subtype'Val (
 				C.gmp.gmp_urandomm_ui (
-					Gen.State.Raw (0)'Access,
+					Reference (Gen.State),
 					Result_Subtype'Range_Length)
 				+ Result_Subtype'Pos (Result_Subtype'First));
 		end Random;
 		
 	end Discrete_Random;
+	
+	package body Controlled is
+		
+		function Reference (Item : in out State)
+			return not null access C.gmp.gmp_randstate_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Reference;
+		
+		function Constant_Reference (Item : State)
+			return not null access constant C.gmp.gmp_randstate_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Constant_Reference;
+		
+		overriding procedure Initialize (Object : in out State) is
+		begin
+			C.gmp.gmp_randinit_default (Object.Raw (0)'Access);
+		end Initialize;
+		
+		overriding procedure Adjust (Object : in out State) is
+			Old : constant C.gmp.gmp_randstate_t := Object.Raw;
+		begin
+			C.gmp.gmp_randinit_set (Object.Raw (0)'Access, Old (0)'Access);
+		end Adjust;
+		
+		overriding procedure Finalize (Object : in out State) is
+		begin
+			C.gmp.gmp_randclear (Object.Raw (0)'Access);
+		end Finalize;
+		
+	end Controlled;
 	
 end GMP.Random;

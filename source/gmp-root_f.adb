@@ -1,3 +1,4 @@
+pragma Ada_2012;
 with Ada.Unchecked_Conversion;
 with C.stdlib;
 with C.string;
@@ -14,14 +15,14 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_set_d (
-				Result.Data.Raw (0)'Access,
+				Reference (Result),
 				C.double (X));
 		end return;
 	end To_MP_Float;
 	
 	function To_Long_Float (X : MP_Float) return Long_Float is
 	begin
-		return Long_Float (C.gmp.mpf_get_d (X.Data.Raw (0)'Access));
+		return Long_Float (C.gmp.mpf_get_d (Constant_Reference (X)));
 	end To_Long_Float;
 	
 	function Image (
@@ -36,7 +37,7 @@ package body GMP.Root_F is
 			Exponent'Access,
 			C.signed_int (Base),
 			0,
-			Value.Data.Raw (0)'Access);
+			Constant_Reference (Value));
 		Length : constant Natural := Integer (C.string.strlen (Image));
 		Ada_Image : String (1 .. Length);
 		for Ada_Image'Address use Image.all'Address;
@@ -99,7 +100,7 @@ package body GMP.Root_F is
 		end if;
 		return Result : MP_Float (Precision) do
 			if C.gmp.mpf_set_str (
-				Result.Data.Raw (0)'Access,
+				Reference (Result),
 				C_Image (First)'Access,
 				C.signed_int (Base)) < 0
 			then
@@ -111,36 +112,36 @@ package body GMP.Root_F is
 	function "=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) = 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) = 0;
 	end "=";
 	
 	function "<" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) < 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) < 0;
 	end "<";
 	
 	function ">" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) > 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) > 0;
 	end ">";
 	
 	function "<=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) <= 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) <= 0;
 	end "<=";
 	
 	function ">=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Left.Data.Raw (0)'Access,
-			Right.Data.Raw (0)'Access) >= 0;
+			Constant_Reference (Left),
+			Constant_Reference (Right)) >= 0;
 	end ">=";
 	
 	function Copy (
@@ -150,8 +151,8 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_set (
-				Result.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Right));
 		end return;
 	end Copy;
 	
@@ -162,8 +163,8 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_neg (
-				Result.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Right));
 		end return;
 	end Negative;
 	
@@ -174,9 +175,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_add (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end Add;
 	
@@ -187,9 +188,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_sub (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end Subtract;
 	
@@ -200,9 +201,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_mul (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end Multiply;
 	
@@ -213,9 +214,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_div (
-				Result.Data.Raw (0)'Access,
-				Left.Data.Raw (0)'Access,
-				Right.Data.Raw (0)'Access);
+				Reference (Result),
+				Constant_Reference (Left),
+				Constant_Reference (Right));
 		end return;
 	end Divide;
 	
@@ -228,8 +229,8 @@ package body GMP.Root_F is
 		return Result : MP_Float (Precision) do
 			if Right >= 0 then
 				C.gmp.mpf_pow_ui (
-					Result.Data.Raw (0)'Access,
-					Left.Data.Raw (0)'Access,
+					Reference (Result),
+					Constant_Reference (Left),
 					C.unsigned_long'Mod (Right));
 			else
 				declare
@@ -238,41 +239,69 @@ package body GMP.Root_F is
 					C.gmp.mpf_init2 (Den (0)'Access, C.gmp.mp_bitcnt_t (Precision));
 					C.gmp.mpf_pow_ui (
 						Den (0)'Access,
-						Left.Data.Raw (0)'Access,
+						Constant_Reference (Left),
 						C.unsigned_long'Mod (Right));
-					C.gmp.mpf_ui_div (Result.Data.Raw (0)'Access, 1, Den (0)'Access);
+					C.gmp.mpf_ui_div (Reference (Result), 1, Den (0)'Access);
 					C.gmp.mpf_clear (Den (0)'Access);
 				end;
 			end if;
 		end return;
 	end Power;
 	
-	function Create (Precision : GMP.Precision) return Controlled is
-	begin
-		return Result : Controlled := (Ada.Finalization.Controlled with Raw => <>) do
-			C.gmp.mpf_init2 (Result.Raw (0)'Access, C.gmp.mp_bitcnt_t (Precision));
-		end return;
-	end Create;
+	package body Controlled is
+		
+		function Create (Precision : GMP.Precision) return MP_Float is
+		begin
+			return Result : MP_Float := (Ada.Finalization.Controlled with Raw => <>) do
+				C.gmp.mpf_init2 (Result.Raw (0)'Access, C.gmp.mp_bitcnt_t (Precision));
+			end return;
+		end Create;
+		
+		function Reference (Item : in out MP_Float)
+			return not null access C.gmp.mpf_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Reference;
+		
+		function Constant_Reference (Item : MP_Float)
+			return not null access constant C.gmp.mpf_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end Constant_Reference;
+		
+		overriding procedure Initialize (Object : in out MP_Float) is
+		begin
+			raise Program_Error;
+		end Initialize;
+		
+		overriding procedure Adjust (Object : in out MP_Float) is
+			Source : constant C.gmp.mpf_t := Object.Raw; -- move
+		begin
+			C.gmp.mpf_init_set (
+				Object.Raw (0)'Access,
+				Source (0)'Access);
+			pragma Assert (
+				C.gmp.gmpf_get_prec (Object.Raw (0)'Access) =
+				C.gmp.gmpf_get_prec (Source (0)'Access));
+		end Adjust;
+		
+		overriding procedure Finalize (Object : in out MP_Float) is
+		begin
+			C.gmp.mpf_clear (Object.Raw (0)'Access);
+		end Finalize;
+		
+	end Controlled;
 	
-	overriding procedure Initialize (Object : in out Controlled) is
+	function Reference (Item : in out MP_Float)
+		return not null access C.gmp.mpf_struct is
 	begin
-		raise Program_Error;
-	end Initialize;
+		return Controlled.Reference (Item.Data);
+	end Reference;
 	
-	overriding procedure Adjust (Object : in out Controlled) is
-		Source : constant C.gmp.mpf_t := Object.Raw; -- move
+	function Constant_Reference (Item : MP_Float)
+		return not null access constant C.gmp.mpf_struct is
 	begin
-		C.gmp.mpf_init_set (
-			Object.Raw (0)'Access,
-			Source (0)'Access);
-		pragma Assert (
-			C.gmp.gmpf_get_prec (Object.Raw (0)'Access) =
-			C.gmp.gmpf_get_prec (Source (0)'Access));
-	end Adjust;
-	
-	overriding procedure Finalize (Object : in out Controlled) is
-	begin
-		C.gmp.mpf_clear (Object.Raw (0)'Access);
-	end Finalize;
+		return Controlled.Constant_Reference (Item.Data);
+	end Constant_Reference;
 	
 end GMP.Root_F;

@@ -1,3 +1,4 @@
+pragma Ada_2012;
 private with Ada.Finalization;
 package MPFR.Root_FR is
 	pragma Preelaborate;
@@ -148,19 +149,45 @@ package MPFR.Root_FR is
 	
 private
 	
-	-- [gcc 4.6] avoiding bug
-	type Controlled is new Ada.Finalization.Controlled with record
-		Raw : aliased C.mpfr.mpfr_t := (others => (others => <>));
-	end record;
+	package Controlled is
+		
+		type MP_Float is private;
+		
+		function Create (Precision : MPFR.Precision) return MP_Float;
+		
+		function Reference (Item : in out MP_Float)
+			return not null access C.mpfr.mpfr_struct;
+		function Constant_Reference (Item : MP_Float)
+			return not null access constant C.mpfr.mpfr_struct;
+		
+		pragma Inline (Reference);
+		pragma Inline (Constant_Reference);
+		
+	private
+		
+		type MP_Float is new Ada.Finalization.Controlled with record
+			Raw : aliased C.mpfr.mpfr_t := (others => (others => <>));
+		end record;
+		
+		overriding procedure Initialize (Object : in out MP_Float);
+		overriding procedure Adjust (Object : in out MP_Float);
+		overriding procedure Finalize (Object : in out MP_Float);
+		
+	end Controlled;
 	
-	function Create (Precision : MPFR.Precision) return Controlled;
-	
-	overriding procedure Initialize (Object : in out Controlled);
-	overriding procedure Adjust (Object : in out Controlled);
-	overriding procedure Finalize (Object : in out Controlled);
-	
+	-- [gcc-4.8/4.9/5.0] derivation with discriminants makes many problems.
 	type MP_Float (Precision : MPFR.Precision) is record
-		Data : Controlled := Create (Precision);
+		Data : Controlled.MP_Float := Controlled.Create (Precision);
 	end record;
+	
+	-- instead of derivation
+	
+	function Reference (Item : in out MP_Float)
+		return not null access C.mpfr.mpfr_struct;
+	function Constant_Reference (Item : MP_Float)
+		return not null access constant C.mpfr.mpfr_struct;
+	
+	pragma Inline (Reference);
+	pragma Inline (Constant_Reference);
 	
 end MPFR.Root_FR;

@@ -4,13 +4,13 @@ with C.gmp;
 package GMP.Z.Inside is
 	pragma Preelaborate;
 	
-	function Reference (X : aliased in out MP_Integer)
+	function Reference (X : in out MP_Integer)
 		return not null access C.gmp.mpz_struct;
-	function Constant_Reference (X : aliased in MP_Integer)
+	function Constant_Reference (X : MP_Integer)
 		return not null access constant C.gmp.mpz_struct;
 	
-	pragma Inline (Reference);
-	pragma Inline (Constant_Reference);
+	pragma Inline (Reference); -- renamed
+	pragma Inline (Constant_Reference); -- renamed
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -23,6 +23,13 @@ package GMP.Z.Inside is
 	pragma Inline (Write); -- renamed
 	
 private	
+	
+	function Reference (X : in out MP_Integer)
+		return not null access C.gmp.mpz_struct
+		renames Z.Reference;
+	function Constant_Reference (X : MP_Integer)
+		return not null access constant C.gmp.mpz_struct
+		renames Z.Constant_Reference;
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
