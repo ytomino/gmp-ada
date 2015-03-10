@@ -52,7 +52,8 @@ $(EXAMPLES): %: $(BUILDDIR)/%
 
 ifneq ($(IMPORTDIR),)
 $(IMPORTDIR): $(SOURCEDIR)/import.h
-	headmaster --to ada -gcc=$(GCC) $(HFLAGS) -p -D $(IMPORTDIR) $+
+	headmaster --to ada -gcc=$(GCC) $(HFLAGS) -p -D $@ $+
+	touch $@
 endif
 
 clean:
