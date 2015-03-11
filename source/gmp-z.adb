@@ -1,13 +1,15 @@
 pragma Ada_2012;
-with System;
+with System.Storage_Elements;
+with C.stdint;
 with C.string;
 package body GMP.Z is
 	use type Ada.Streams.Stream_Element;
 	use type Ada.Streams.Stream_Element_Offset;
+	use type System.Storage_Elements.Storage_Element;
+	use type System.Storage_Elements.Storage_Offset;
 	use type C.signed_int;
-	use type C.signed_long;
 	use type C.size_t;
-	use type C.gmp.mp_bitcnt_t;
+	use type C.gmp.mp_size_t;
 	
 	function To_MP_Integer (X : Long_Long_Integer) return MP_Integer is
 	begin
@@ -223,115 +225,118 @@ package body GMP.Z is
 		Write (Stream, Constant_Reference (Item));
 	end Write;
 	
+	-- streaming
+	
+	function bswap32 (x : C.stdint.int32_t) return C.stdint.int32_t
+		with Import, Convention => Intrinsic, External_Name => "__builtin_bswap32";
+	
+	function Convert_BE (X : C.stdint.int32_t) return C.stdint.int32_t is
+	begin
+		case System.Default_Bit_Order is
+			when System.High_Order_First =>
+				return X;
+			when System.Low_Order_First =>
+				return bswap32 (X);
+		end case;
+	end Convert_BE;
+	
+	-- Read, equivalent to mpz_in_raw
+	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : not null access C.gmp.mpz_struct)
 	is
-		Size : Ada.Streams.Stream_Element_Offset;
+		csize : System.Storage_Elements.Storage_Offset;
 	begin
-		Ada.Streams.Stream_Element_Offset'Read (Stream, Size);
 		declare
-			Data : Ada.Streams.Stream_Element_Array (1 .. Size);
+			csize_bytes : C.stdint.int32_t; -- 4 bytes for size
 		begin
-			Ada.Streams.Stream_Element_Array'Read (Stream, Data);
-			C.gmp.mpz_import (
-				Item,
-				C.size_t (Size),
-				1, -- big endian in array
-				1, -- word size
-				1, -- big endian in word
-				0, -- no padding
-				C.void_const_ptr (Data'Address));
-			if Size > 0 and then Data (1) >= 16#80# then
-				declare
-					X : C.gmp.mpz_t := (others => (others => <>));
-				begin
-					C.gmp.mpz_init_set_si (X (0)'Access, -1);
-					C.gmp.mpz_mul_2exp (
-						X (0)'Access,
-						X (0)'Access,
-						C.unsigned_long'Mod (Size) * Ada.Streams.Stream_Element'Size);
-					C.gmp.mpz_ior (
-						Item,
-						Item,
-						X (0)'Access);
-					C.gmp.mpz_clear (X (0)'Access);
-				end;
-			end if;
+			C.stdint.int32_t'Read (Stream, csize_bytes);
+			csize := System.Storage_Elements.Storage_Offset ( -- sign extending
+				Convert_BE (csize_bytes));
 		end;
+		if csize /= 0 then
+			declare
+				abs_csize : constant System.Storage_Elements.Storage_Offset := abs csize;
+				cp : aliased System.Storage_Elements.Storage_Array (0 .. abs_csize - 1);
+			begin
+				System.Storage_Elements.Storage_Array'Read (Stream, cp);
+				C.gmp.mpz_import (
+					Item,
+					C.size_t (abs_csize), -- word count
+					1, -- big endian in array
+					1, -- word size
+					1, -- big endian in word
+					0, -- no padding
+					C.void_const_ptr (cp'Address));
+			end;
+			if csize < 0 then
+				C.gmp.mpz_neg (Item, Item);
+			end if;
+		else
+			C.gmp.mpz_set_ui (Item, 0);
+		end if;
 	end Read;
+	
+	-- Write, equivalent to mpz_out_raw
 	
 	procedure Write (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : not null access constant C.gmp.mpz_struct)
 	is
-		C_Size : aliased C.size_t;
-		Dummy : C.void_ptr := C.gmp.mpz_export (
-			C.void_ptr (System.Null_Address),
-			C_Size'Access,
-			1,
-			1,
-			1,
-			0,
-			Item);
-		pragma Unreferenced (Dummy);
-		Size : constant Ada.Streams.Stream_Element_Count :=
-			Ada.Streams.Stream_Element_Count (C_Size);
-		Data : Ada.Streams.Stream_Element_Array (0 .. Size);
+		xsize : constant C.gmp.mp_size_t := C.gmp.mp_size_t (Item.mp_size);
 	begin
-		if Size = 0 then
-			Ada.Streams.Stream_Element_Offset'Write (Stream, 0);
-		elsif C.gmp.qmpz_cmp_si (Item, 0) >= 0 then
-			Dummy := C.gmp.mpz_export (
-				C.void_ptr (Data (1)'Address),
-				C_Size'Access,
-				1, -- big endian in array
-				1, -- word size
-				1, -- big endian in word
-				0, -- no padding
-				Item);
-			if Data (1) >= 16#80# then
-				Ada.Streams.Stream_Element_Offset'Write (Stream, Size + 1);
-				Data (0) := 0;
-				Ada.Streams.Stream_Element_Array'Write (Stream, Data);
-			else
-				Ada.Streams.Stream_Element_Offset'Write (Stream, Size);
-				Ada.Streams.Stream_Element_Array'Write (Stream, Data (1 .. Size));
-			end if;
-		else
+		if xsize /= 0 then
 			declare
-				Item_1 : C.gmp.mpz_t := (others => (others => <>));
-				X : C.gmp.mpz_t := (others => (others => <>));
+				abs_xsize : constant C.gmp.mp_size_t := abs xsize;
+				tsize : constant System.Storage_Elements.Storage_Offset :=
+					(System.Storage_Elements.Storage_Offset (abs_xsize)
+						* C.gmp.GMP_NUMB_BITS + 7)
+					/ 8;
+				tp : System.Storage_Elements.Storage_Array (0 .. tsize - 1);
+				bp : System.Storage_Elements.Storage_Offset := 0;
+				bytes : aliased C.size_t;
+				Dummy : C.void_ptr;
 			begin
-				C.gmp.mpz_init (Item_1 (0)'Access);
-				C.gmp.mpz_sub_ui (Item_1 (0)'Access, Item, 1);
-				C.gmp.mpz_init_set_ui (X (0)'Access, 1);
-				C.gmp.mpz_mul_2exp (
-					X (0)'Access,
-					X (0)'Access,
-					(C.unsigned_long'Mod (C.gmp.mpz_sizeinbase (Item_1 (0)'Access, 2)) +
-					Ada.Streams.Stream_Element'Size - 1)
-					/ Ada.Streams.Stream_Element'Size
-					* Ada.Streams.Stream_Element'Size);
-				C.gmp.mpz_sub_ui (X (0)'Access, X (0)'Access, 1);
-				C.gmp.mpz_and (X (0)'Access, X (0)'Access, Item);
 				Dummy := C.gmp.mpz_export (
-					C.void_ptr (Data (0)'Address),
-					C_Size'Access,
+					C.void_ptr (tp'Address),
+					bytes'Access,
 					1, -- big endian in array
 					1, -- word size
 					1, -- big endian in word
 					0, -- no padding
-					X (0)'Access);
-				Ada.Streams.Stream_Element_Offset'Write (
-					Stream,
-					Ada.Streams.Stream_Element_Count (C_Size));
-				Ada.Streams.Stream_Element_Array'Write (
-					Stream,
-					Data (0 .. Ada.Streams.Stream_Element_Count (C_Size) - 1));
-				C.gmp.mpz_clear (X (0)'Access);
-				C.gmp.mpz_clear (Item_1 (0)'Access);
+					Item);
+				-- strip high zero bytes (without fetching from bp)
+				declare
+					zeros : System.Storage_Elements.Storage_Offset := 0;
+				begin
+					while tp (zeros) = 0 loop
+						zeros := zeros + 1;
+					end loop;
+					bp := bp + zeros;
+					bytes := bytes - C.size_t (zeros);
+				end;
+				declare
+					-- total bytes to be written
+					ssize : constant System.Storage_Elements.Storage_Offset :=
+						System.Storage_Elements.Storage_Offset (bytes);
+				begin
+					declare
+						bytes_Signed : C.stdint.int32_t := C.stdint.int32_t (bytes);
+					begin
+						if xsize < 0 then
+							-- twos complement negative for the size value
+							bytes_Signed := -bytes_Signed;
+						end if;
+						C.stdint.int32_t'Write (Stream, Convert_BE (bytes_Signed));
+					end;
+					System.Storage_Elements.Storage_Array'Write (
+						Stream,
+						tp (bp .. bp + ssize - 1));
+				end;
 			end;
+		else
+			C.stdint.int32_t'Write (Stream, 0);
 		end if;
 	end Write;
 	
