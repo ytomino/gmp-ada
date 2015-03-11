@@ -8,39 +8,51 @@ VERSION=$(shell gcc -dumpversion)
 BUILDDIR=$(TARGET).build
 
 ifeq ($(TARGET),$(HOST))
-GNATMAKE=gnatmake
-GCC=$(dir $(shell which $(GNATMAKE)))gcc
+GNATPREFIX=
+GCC=
 BINLN=bin
 else
-GNATMAKE=$(TARGET)-gnatmake
+GNATPREFIX=$(TARGET)-
 GCC=$(TARGET)-gcc
 BINLN=
 endif
+
+GFLAGS=
+CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3chbs
+MFLAGS=-D $(BUILDDIR)
+BFLAGS=-E
+LFLAGS=-ggdb
 
 ifneq ($(DRAKE_RTSROOT),)
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
 IMPORTDIR=
-MFLAGS=--RTS=$(abspath $(DRAKE_RTSDIR))
+GFLAGS+=--RTS=$(abspath $(DRAKE_RTSDIR))
 else
 IMPORTDIR=$(BUILDDIR)/import
-MFLAGS=-I$(abspath $(IMPORTDIR))
+MFLAGS+=-I$(IMPORTDIR)
+endif
+
+ifneq ($(GCC),)
+GFLAGS+=$(filter -m32 -m64,$(GCC))
+MFLAGS+=--GCC="$(GCC)"
+LFLAGS+=--GCC="$(GCC)"
+HFLAGS+=-gcc="$(GCC)"
 endif
 
 EXAMPLES=$(basename $(filter-out b~%,$(wildcard *.adb)))
 
-CFLAGS=-gnata -gnatwa -gnatyy-3chbs
-
 .PHONY: all clean $(EXAMPLES)
 
-all: $(BUILDDIR)/check_sig $(BUILDDIR)/images $(BUILDDIR)/random $(BUILDDIR)/stream $(BUILDDIR)/test_pi $(BUILDDIR)/test_pi_op $(BUILDDIR)/versions $(BINLN)
-
-$(BUILDDIR)/test_pi: test_pi.adb $(BUILDDIR) $(IMPORTDIR) $(wildcard $(SOURCEDIR)/*)
-	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) $(CFLAGS) ../$< -largs $(LFLAGS) -lgmp
+all: $(EXAMPLES)
 
 $(BUILDDIR)/%: %.adb $(BUILDDIR) $(IMPORTDIR) $(wildcard $(SOURCEDIR)/*)
-	cd $(BUILDDIR) && $(GNATMAKE) -g $(MFLAGS) -I../$(SOURCEDIR) $(CFLAGS) ../$< -largs $(LFLAGS)
+	$(GNATPREFIX)gnatmake -c -I$(SOURCEDIR) $< $(GFLAGS) $(MFLAGS) -cargs $(CFLAGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatmake -b $(basename $(notdir $<)).ali $(GFLAGS) -bargs $(BFLAGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GFLAGS) $(LFLAGS)
+
+$(BUILDDIR)/test_pi: LFLAGS+=-lgmp
 
 $(BUILDDIR):
 	mkdir $(BUILDDIR)
@@ -48,11 +60,11 @@ $(BUILDDIR):
 $(BINLN): $(BUILDDIR)
 	ln -s $(BUILDDIR) $(BINLN)
 
-$(EXAMPLES): %: $(BUILDDIR)/%
+$(EXAMPLES): %: $(BUILDDIR)/% $(BINLN)
 
 ifneq ($(IMPORTDIR),)
 $(IMPORTDIR): $(SOURCEDIR)/import.h
-	headmaster --to ada -gcc=$(GCC) $(HFLAGS) -p -D $@ $+
+	headmaster --to ada $(HFLAGS) -p -D $@ $+
 	touch $@
 endif
 
