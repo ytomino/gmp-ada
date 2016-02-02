@@ -33,17 +33,20 @@ package body GMP.Q is
 			+ C.gmp.mpz_sizeinbase (Raw_Value.mp_den'Access, C.signed_int (Base))
 			+ 2;
 		Buffer : C.char_array (0 .. Buffer_Size);
-		Dummy : C.char_ptr := C.gmp.mpq_get_str (
+		Dummy : C.char_ptr;
+	begin
+		Dummy := C.gmp.mpq_get_str (
 			Buffer (Buffer'First)'Access,
 			C.signed_int (Base),
 			Raw_Value);
-		pragma Unreferenced (Dummy);
-		Length : constant Natural :=
-			Natural (C.string.strlen (Buffer (Buffer'First)'Access));
-		Result : String (1 .. Length);
-		for Result'Address use Buffer'Address;
-	begin
-		return Result;
+		declare
+			Length : constant Natural :=
+				Natural (C.string.strlen (Buffer (Buffer'First)'Access));
+			Result : String (1 .. Length);
+			for Result'Address use Buffer'Address;
+		begin
+			return Result;
+		end;
 	end Image;
 	
 	function Value (Image : String; Base : Number_Base := 10)

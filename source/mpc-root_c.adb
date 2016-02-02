@@ -8,7 +8,6 @@ package body MPC.Root_C is
 	function Re (X : MP_Complex) return MPFR.Root_FR.MP_Float is
 		Source : C.mpfr.mpfr_t renames Controlled.Constant_Reference (X).re;
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MPFR.Root_FR.MP_Float (
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
@@ -24,7 +23,6 @@ package body MPC.Root_C is
 	function Im (X : MP_Complex) return MPFR.Root_FR.MP_Float is
 		Source : C.mpfr.mpfr_t renames Controlled.Constant_Reference (X).im;
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MPFR.Root_FR.MP_Float (
 			MPFR.Precision (C.mpfr.mpfr_get_prec (Source (0)'Access)))
@@ -39,7 +37,6 @@ package body MPC.Root_C is
 	
 	function Compose (Re, Im : MPFR.Root_FR.MP_Float) return MP_Complex is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Re.Precision, Im.Precision) do
 			Dummy := C.mpc.mpc_set_fr_fr (
@@ -59,7 +56,6 @@ package body MPC.Root_C is
 		Im_Source : constant not null access constant C.mpfr.mpfr_struct :=
 			MPFR.Root_FR.Inside.Constant_Reference (Im);
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Im.Precision) do
 			declare
@@ -167,7 +163,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_set (
@@ -185,7 +180,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_neg (
@@ -203,7 +197,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_add (
@@ -222,7 +215,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_sub (
@@ -241,7 +233,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_mul (
@@ -260,7 +251,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_div (
@@ -280,7 +270,6 @@ package body MPC.Root_C is
 		return MP_Complex
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_pow_si (
@@ -328,7 +317,6 @@ package body MPC.Root_C is
 		overriding procedure Adjust (Object : in out MP_Complex) is
 			Source : constant C.mpc.mpc_t := Object.Raw; -- move
 			Dummy : C.signed_int;
-			pragma Unreferenced (Dummy);
 		begin
 			C.mpc.mpc_init3 (
 				Object.Raw (0)'Access,

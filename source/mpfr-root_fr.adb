@@ -10,7 +10,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_set_ld (
@@ -172,7 +171,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_set4 (
@@ -190,7 +188,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_neg (
@@ -207,7 +204,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_add (
@@ -226,7 +222,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -261,7 +256,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_sub (
@@ -280,7 +274,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -306,7 +299,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Left2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -331,7 +323,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_mul (
@@ -350,7 +341,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -385,7 +375,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_div (
@@ -404,7 +393,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Right2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -430,7 +418,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 		Left2 : C.mpfr.mpfr_t := (others => (others => <>));
 	begin
 		return Result : MP_Float (Precision) do
@@ -456,7 +443,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_pow_si (
@@ -474,7 +460,6 @@ package body MPFR.Root_FR is
 		return MP_Float
 	is
 		Dummy : C.signed_int;
-		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Float (Precision) do
 			Dummy := C.mpfr.mpfr_sqrt (
@@ -533,7 +518,6 @@ package body MPFR.Root_FR is
 		overriding procedure Adjust (Object : in out MP_Float) is
 			Source : constant C.mpfr.mpfr_t := Object.Raw; -- move
 			Dummy : C.signed_int;
-			pragma Unreferenced (Dummy);
 		begin
 			C.mpfr.mpfr_init2 (
 				Object.Raw (0)'Access,
