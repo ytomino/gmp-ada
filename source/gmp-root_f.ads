@@ -72,9 +72,9 @@ private
 		
 		function Create (Precision : GMP.Precision) return MP_Float;
 		
-		function Reference (Item : in out MP_Float)
+		function Reference (Item : in out Root_F.MP_Float)
 			return not null access C.gmp.mpf_struct;
-		function Constant_Reference (Item : MP_Float)
+		function Constant_Reference (Item : Root_F.MP_Float)
 			return not null access constant C.gmp.mpf_struct;
 		
 		pragma Inline (Reference);
@@ -96,15 +96,5 @@ private
 	type MP_Float (Precision : GMP.Precision) is record
 		Data : Controlled.MP_Float := Controlled.Create (Precision);
 	end record;
-	
-	-- instead of derivation
-	
-	function Reference (Item : in out MP_Float)
-		return not null access C.gmp.mpf_struct;
-	function Constant_Reference (Item : MP_Float)
-		return not null access constant C.gmp.mpf_struct;
-	
-	pragma Inline (Reference);
-	pragma Inline (Constant_Reference);
 	
 end GMP.Root_F;

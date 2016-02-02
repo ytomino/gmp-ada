@@ -155,9 +155,9 @@ private
 		
 		function Create (Precision : MPFR.Precision) return MP_Float;
 		
-		function Reference (Item : in out MP_Float)
+		function Reference (Item : in out Root_FR.MP_Float)
 			return not null access C.mpfr.mpfr_struct;
-		function Constant_Reference (Item : MP_Float)
+		function Constant_Reference (Item : Root_FR.MP_Float)
 			return not null access constant C.mpfr.mpfr_struct;
 		
 		pragma Inline (Reference);
@@ -179,15 +179,5 @@ private
 	type MP_Float (Precision : MPFR.Precision) is record
 		Data : Controlled.MP_Float := Controlled.Create (Precision);
 	end record;
-	
-	-- instead of derivation
-	
-	function Reference (Item : in out MP_Float)
-		return not null access C.mpfr.mpfr_struct;
-	function Constant_Reference (Item : MP_Float)
-		return not null access constant C.mpfr.mpfr_struct;
-	
-	pragma Inline (Reference);
-	pragma Inline (Constant_Reference);
 	
 end MPFR.Root_FR;

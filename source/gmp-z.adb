@@ -14,18 +14,20 @@ package body GMP.Z is
 	function To_MP_Integer (X : Long_Long_Integer) return MP_Integer is
 	begin
 		return Result : MP_Integer do
-			mpz_set_Long_Long_Integer (Reference (Result), X);
+			mpz_set_Long_Long_Integer (Controlled.Reference (Result), X);
 		end return;
 	end To_MP_Integer;
 	
 	function Image (Value : MP_Integer; Base : Number_Base := 10) return String is
+		Raw_Value : constant not null access constant C.gmp.mpz_struct :=
+			Controlled.Constant_Reference (Value);
 		Buffer_Size : constant C.size_t :=
-			C.gmp.mpz_sizeinbase (Constant_Reference (Value), C.signed_int (Base)) + 2;
+			C.gmp.mpz_sizeinbase (Raw_Value, C.signed_int (Base)) + 2;
 		Buffer : C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr := C.gmp.mpz_get_str (
 			Buffer (Buffer'First)'Access,
 			C.signed_int (Base),
-			Constant_Reference (Value));
+			Raw_Value);
 		pragma Unreferenced (Dummy);
 		Length : constant Natural :=
 			Natural (C.string.strlen (Buffer (Buffer'First)'Access));
@@ -42,7 +44,7 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			if C.gmp.mpz_set_str (
-				Reference (Result),
+				Controlled.Reference (Result),
 				C_Image (C_Image'First)'Access,
 				C.signed_int (Base)) < 0
 			then
@@ -54,36 +56,36 @@ package body GMP.Z is
 	function "=" (Left, Right : MP_Integer) return Boolean is
 	begin
 		return C.gmp.mpz_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) = 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) = 0;
 	end "=";
 	
 	function "<" (Left, Right : MP_Integer) return Boolean is
 	begin
 		return C.gmp.mpz_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) < 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) < 0;
 	end "<";
 	
 	function ">" (Left, Right : MP_Integer) return Boolean is
 	begin
 		return C.gmp.mpz_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) > 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) > 0;
 	end ">";
 	
 	function "<=" (Left, Right : MP_Integer) return Boolean is
 	begin
 		return C.gmp.mpz_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) <= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) <= 0;
 	end "<=";
 	
 	function ">=" (Left, Right : MP_Integer) return Boolean is
 	begin
 		return C.gmp.mpz_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) >= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) >= 0;
 	end ">=";
 	
 	function "+" (Right : MP_Integer) return MP_Integer is
@@ -95,8 +97,8 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_neg (
-				Reference (Result),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end "-";
 	
@@ -104,9 +106,9 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_add (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end "+";
 	
@@ -114,9 +116,9 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_sub (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end "-";
 	
@@ -124,9 +126,9 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_mul (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end "*";
 	
@@ -134,9 +136,9 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_div (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end "/";
 	
@@ -144,16 +146,16 @@ package body GMP.Z is
 	begin
 		return Result : MP_Integer do
 			C.gmp.mpz_pow_ui (
-				Reference (Result),
-				Constant_Reference (Left),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
 				C.unsigned_long'Mod (Right));
 		end return;
 	end "**";
 	
 	function Copy_Sign (Value, Sign : MP_Integer) return MP_Integer is
 	begin
-		if (C.gmp.qmpz_cmp_si (Constant_Reference (Value), 0) < 0) =
-			(C.gmp.qmpz_cmp_si (Constant_Reference (Sign), 0) < 0)
+		if (C.gmp.qmpz_cmp_si (Controlled.Constant_Reference (Value), 0) < 0) =
+			(C.gmp.qmpz_cmp_si (Controlled.Constant_Reference (Sign), 0) < 0)
 		then
 			return Value;
 		else
@@ -163,7 +165,9 @@ package body GMP.Z is
 	
 	function Copy_Sign (Value : MP_Integer; Sign : Integer) return MP_Integer is
 	begin
-		if (C.gmp.qmpz_cmp_si (Constant_Reference (Value), 0) < 0) = (Sign < 0) then
+		if (C.gmp.qmpz_cmp_si (Controlled.Constant_Reference (Value), 0) < 0) =
+			(Sign < 0)
+		then
 			return Value;
 		else
 			return -Value;
@@ -172,7 +176,9 @@ package body GMP.Z is
 	
 	function Copy_Sign (Value : Integer; Sign : MP_Integer) return Integer is
 	begin
-		if (Value < 0) = (C.gmp.qmpz_cmp_si (Constant_Reference (Sign), 0) < 0) then
+		if (Value < 0) =
+			(C.gmp.qmpz_cmp_si (Controlled.Constant_Reference (Sign), 0) < 0)
+		then
 			return Value;
 		else
 			return -Value;
@@ -181,16 +187,16 @@ package body GMP.Z is
 	
 	package body Controlled is
 		
-		function Reference (Item : in out MP_Integer)
+		function Reference (Item : in out Z.MP_Integer)
 			return not null access C.gmp.mpz_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return MP_Integer (Item).Raw (0)'Unrestricted_Access;
 		end Reference;
 		
-		function Constant_Reference (Item : MP_Integer)
+		function Constant_Reference (Item : Z.MP_Integer)
 			return not null access constant C.gmp.mpz_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return MP_Integer (Item).Raw (0)'Unchecked_Access;
 		end Constant_Reference;
 		
 		overriding procedure Initialize (Object : in out MP_Integer) is
@@ -215,14 +221,14 @@ package body GMP.Z is
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : out MP_Integer) is
 	begin
-		Read (Stream, Reference (Item));
+		Read (Stream, Controlled.Reference (Item));
 	end Read;
 	
 	procedure Write (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Item : in MP_Integer) is
 	begin
-		Write (Stream, Constant_Reference (Item));
+		Write (Stream, Controlled.Constant_Reference (Item));
 	end Write;
 	
 	-- streaming

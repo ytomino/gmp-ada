@@ -54,9 +54,9 @@ private
 		
 		type MP_Rational is private;
 		
-		function Reference (Item : in out MP_Rational)
+		function Reference (Item : in out Q.MP_Rational)
 			return not null access C.gmp.mpq_struct;
-		function Constant_Reference (Item : MP_Rational)
+		function Constant_Reference (Item : Q.MP_Rational)
 			return not null access constant C.gmp.mpq_struct;
 		
 		pragma Inline (Reference);

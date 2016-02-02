@@ -36,7 +36,7 @@ package body GMP.Random is
 	begin
 		return Result : State do
 			C.gmp.gmp_randseed_ui (
-				Reference (Result),
+				Controlled.Reference (Result),
 				C.unsigned_long'Mod (Initiator));
 		end return;
 	end Initialize;
@@ -66,7 +66,7 @@ package body GMP.Random is
 		pragma Suppress (Range_Check);
 	begin
 		return Long_Integer (C.gmp.gmp_urandomb_ui (
-			Reference (Gen.State),
+			Controlled.Reference (Gen.State),
 			Long_Integer'Size));
 	end Random;
 	
@@ -76,7 +76,7 @@ package body GMP.Random is
 		begin
 			return Result_Subtype'Val (
 				C.gmp.gmp_urandomm_ui (
-					Reference (Gen.State),
+					Controlled.Reference (Gen.State),
 					Result_Subtype'Range_Length)
 				+ Result_Subtype'Pos (Result_Subtype'First));
 		end Random;
@@ -85,16 +85,16 @@ package body GMP.Random is
 	
 	package body Controlled is
 		
-		function Reference (Item : in out State)
+		function Reference (Item : in out GMP.Random.State)
 			return not null access C.gmp.gmp_randstate_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return State (Item).Raw (0)'Unrestricted_Access;
 		end Reference;
 		
-		function Constant_Reference (Item : State)
+		function Constant_Reference (Item : GMP.Random.State)
 			return not null access constant C.gmp.gmp_randstate_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return State (Item).Raw (0)'Unchecked_Access;
 		end Constant_Reference;
 		
 		overriding procedure Initialize (Object : in out State) is

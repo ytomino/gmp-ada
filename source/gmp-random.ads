@@ -34,9 +34,9 @@ private
 		
 		type State is private;
 		
-		function Reference (Item : in out State)
+		function Reference (Item : in out GMP.Random.State)
 			return not null access C.gmp.gmp_randstate_struct;
-		function Constant_Reference (Item : State)
+		function Constant_Reference (Item : GMP.Random.State)
 			return not null access constant C.gmp.gmp_randstate_struct;
 		
 		pragma Inline (Reference);

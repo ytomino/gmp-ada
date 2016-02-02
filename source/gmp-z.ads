@@ -56,9 +56,9 @@ private
 		
 		type MP_Integer is private;
 		
-		function Reference (Item : in out MP_Integer)
+		function Reference (Item : in out Z.MP_Integer)
 			return not null access C.gmp.mpz_struct;
-		function Constant_Reference (Item : MP_Integer)
+		function Constant_Reference (Item : Z.MP_Integer)
 			return not null access constant C.gmp.mpz_struct;
 		
 		pragma Inline (Reference);

@@ -15,9 +15,9 @@ private
 	
 	function Reference (X : in out MP_Float)
 		return not null access C.mpfr.mpfr_struct
-		renames Root_FR.Reference;
+		renames Controlled.Reference;
 	function Constant_Reference (X : MP_Float)
 		return not null access constant C.mpfr.mpfr_struct
-		renames Root_FR.Constant_Reference;
+		renames Controlled.Constant_Reference;
 	
 end MPFR.Root_FR.Inside;

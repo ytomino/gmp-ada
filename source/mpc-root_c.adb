@@ -6,7 +6,7 @@ package body MPC.Root_C is
 	use type C.signed_int;
 	
 	function Re (X : MP_Complex) return MPFR.Root_FR.MP_Float is
-		Source : C.mpfr.mpfr_t renames Constant_Reference (X).re;
+		Source : C.mpfr.mpfr_t renames Controlled.Constant_Reference (X).re;
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
 	begin
@@ -22,7 +22,7 @@ package body MPC.Root_C is
 	end Re;
 	
 	function Im (X : MP_Complex) return MPFR.Root_FR.MP_Float is
-		Source : C.mpfr.mpfr_t renames Constant_Reference (X).im;
+		Source : C.mpfr.mpfr_t renames Controlled.Constant_Reference (X).im;
 		Dummy : C.signed_int;
 		pragma Unreferenced (Dummy);
 	begin
@@ -43,7 +43,7 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Re.Precision, Im.Precision) do
 			Dummy := C.mpc.mpc_set_fr_fr (
-				Reference (Result),
+				Controlled.Reference (Result),
 				MPFR.Root_FR.Inside.Constant_Reference (Re),
 				MPFR.Root_FR.Inside.Constant_Reference (Im),
 				C.mpc.MPC_RNDNN);
@@ -62,15 +62,20 @@ package body MPC.Root_C is
 		pragma Unreferenced (Dummy);
 	begin
 		return Result : MP_Complex (Real_Precision, Im.Precision) do
-			Dummy := C.mpfr.mpfr_set_ld (
-				Reference (Result).re (0)'Access,
-				C.long_double (Re),
-				C.mpfr.MPFR_RNDN);
-			Dummy := C.mpfr.mpfr_set4 (
-				Reference (Result).im (0)'Access,
-				Im_Source,
-				C.mpfr.MPFR_RNDN,
-				C.mpfr.mpfr_sgn (Im_Source));
+			declare
+				Raw_Result : constant not null access C.mpc.mpc_struct :=
+					Controlled.Reference (Result);
+			begin
+				Dummy := C.mpfr.mpfr_set_ld (
+					Raw_Result.re (0)'Access,
+					C.long_double (Re),
+					C.mpfr.MPFR_RNDN);
+				Dummy := C.mpfr.mpfr_set4 (
+					Raw_Result.im (0)'Access,
+					Im_Source,
+					C.mpfr.MPFR_RNDN,
+					C.mpfr.mpfr_sgn (Im_Source));
+			end;
 		end return;
 	end Compose;
 	
@@ -83,7 +88,7 @@ package body MPC.Root_C is
 		Image : constant C.char_ptr := C.mpc.mpc_get_str (
 			C.signed_int (Base),
 			0,
-			Constant_Reference (Value),
+			Controlled.Constant_Reference (Value),
 			C.mpc.mpc_rnd_t (Rounding));
 		Length : constant Natural := Integer (C.string.strlen (Image));
 		Ada_Image : String (1 .. Length);
@@ -109,7 +114,7 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			if C.mpc.mpc_set_str (
-				Reference (Result),
+				Controlled.Reference (Result),
 				C_Image (C_Image'First)'Access,
 				C.signed_int (Base),
 				C.mpc.mpc_rnd_t (Rounding)) < 0
@@ -122,36 +127,36 @@ package body MPC.Root_C is
 	function "=" (Left, Right : MP_Complex) return Boolean is
 	begin
 		return C.mpc.mpc_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) = 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) = 0;
 	end "=";
 	
 	function "<" (Left, Right : MP_Complex) return Boolean is
 	begin
 		return C.mpc.mpc_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) < 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) < 0;
 	end "<";
 	
 	function ">" (Left, Right : MP_Complex) return Boolean is
 	begin
 		return C.mpc.mpc_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) > 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) > 0;
 	end ">";
 	
 	function "<=" (Left, Right : MP_Complex) return Boolean is
 	begin
 		return C.mpc.mpc_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) <= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) <= 0;
 	end "<=";
 	
 	function ">=" (Left, Right : MP_Complex) return Boolean is
 	begin
 		return C.mpc.mpc_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) >= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) >= 0;
 	end ">=";
 	
 	function Copy (
@@ -166,8 +171,8 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_set (
-				Reference (Result),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Copy;
@@ -184,8 +189,8 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_neg (
-				Reference (Result),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Negative;
@@ -202,9 +207,9 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_add (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Add;
@@ -221,9 +226,9 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_sub (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Subtract;
@@ -240,9 +245,9 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_mul (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Multiply;
@@ -259,9 +264,9 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_div (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
 	end Divide;
@@ -279,8 +284,8 @@ package body MPC.Root_C is
 	begin
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			Dummy := C.mpc.mpc_pow_si (
-				Reference (Result),
-				Constant_Reference (Left),
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
 				C.signed_long (Right),
 				C.mpc.mpc_rnd_t (Rounding));
 		end return;
@@ -303,16 +308,16 @@ package body MPC.Root_C is
 			end return;
 		end Create;
 		
-		function Reference (Item : in out MP_Complex)
+		function Reference (Item : in out Root_C.MP_Complex)
 			return not null access C.mpc.mpc_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return Item.Data.Raw (0)'Unchecked_Access;
 		end Reference;
 		
-		function Constant_Reference (Item : MP_Complex)
+		function Constant_Reference (Item : Root_C.MP_Complex)
 			return not null access constant C.mpc.mpc_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return Item.Data.Raw (0)'Unchecked_Access;
 		end Constant_Reference;
 		
 		overriding procedure Initialize (Object : in out MP_Complex) is
@@ -341,17 +346,5 @@ package body MPC.Root_C is
 		end Finalize;
 		
 	end Controlled;
-	
-	function Reference (Item : in out MP_Complex)
-		return not null access C.mpc.mpc_struct is
-	begin
-		return Controlled.Reference (Item.Data);
-	end Reference;
-	
-	function Constant_Reference (Item : MP_Complex)
-		return not null access constant C.mpc.mpc_struct is
-	begin
-		return Controlled.Constant_Reference (Item.Data);
-	end Constant_Reference;
 	
 end MPC.Root_C;

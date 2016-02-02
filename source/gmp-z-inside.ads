@@ -26,10 +26,10 @@ private
 	
 	function Reference (X : in out MP_Integer)
 		return not null access C.gmp.mpz_struct
-		renames Z.Reference;
+		renames Controlled.Reference;
 	function Constant_Reference (X : MP_Integer)
 		return not null access constant C.gmp.mpz_struct
-		renames Z.Constant_Reference;
+		renames Controlled.Constant_Reference;
 	
 	procedure Read (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;

@@ -98,9 +98,9 @@ private
 			Imaginary_Precision : MPFR.Precision)
 			return MP_Complex;
 		
-		function Reference (Item : in out MP_Complex)
+		function Reference (Item : in out Root_C.MP_Complex)
 			return not null access C.mpc.mpc_struct;
-		function Constant_Reference (Item : MP_Complex)
+		function Constant_Reference (Item : Root_C.MP_Complex)
 			return not null access constant C.mpc.mpc_struct;
 		
 		pragma Inline (Reference);
@@ -127,15 +127,5 @@ private
 		Data : Controlled.MP_Complex :=
 			Controlled.Create (Real_Precision, Imaginary_Precision);
 	end record;
-	
-	-- instead of derivation
-	
-	function Reference (Item : in out MP_Complex)
-		return not null access C.mpc.mpc_struct;
-	function Constant_Reference (Item : MP_Complex)
-		return not null access constant C.mpc.mpc_struct;
-	
-	pragma Inline (Reference);
-	pragma Inline (Constant_Reference);
 	
 end MPC.Root_C;

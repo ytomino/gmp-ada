@@ -15,14 +15,14 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_set_d (
-				Reference (Result),
+				Controlled.Reference (Result),
 				C.double (X));
 		end return;
 	end To_MP_Float;
 	
 	function To_Long_Float (X : MP_Float) return Long_Float is
 	begin
-		return Long_Float (C.gmp.mpf_get_d (Constant_Reference (X)));
+		return Long_Float (C.gmp.mpf_get_d (Controlled.Constant_Reference (X)));
 	end To_Long_Float;
 	
 	function Image (
@@ -37,7 +37,7 @@ package body GMP.Root_F is
 			Exponent'Access,
 			C.signed_int (Base),
 			0,
-			Constant_Reference (Value));
+			Controlled.Constant_Reference (Value));
 		Length : constant Natural := Integer (C.string.strlen (Image));
 		Ada_Image : String (1 .. Length);
 		for Ada_Image'Address use Image.all'Address;
@@ -100,7 +100,7 @@ package body GMP.Root_F is
 		end if;
 		return Result : MP_Float (Precision) do
 			if C.gmp.mpf_set_str (
-				Reference (Result),
+				Controlled.Reference (Result),
 				C_Image (First)'Access,
 				C.signed_int (Base)) < 0
 			then
@@ -112,36 +112,36 @@ package body GMP.Root_F is
 	function "=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) = 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) = 0;
 	end "=";
 	
 	function "<" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) < 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) < 0;
 	end "<";
 	
 	function ">" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) > 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) > 0;
 	end ">";
 	
 	function "<=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) <= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) <= 0;
 	end "<=";
 	
 	function ">=" (Left, Right : MP_Float) return Boolean is
 	begin
 		return C.gmp.mpf_cmp (
-			Constant_Reference (Left),
-			Constant_Reference (Right)) >= 0;
+			Controlled.Constant_Reference (Left),
+			Controlled.Constant_Reference (Right)) >= 0;
 	end ">=";
 	
 	function Copy (
@@ -151,8 +151,8 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_set (
-				Reference (Result),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Copy;
 	
@@ -163,8 +163,8 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_neg (
-				Reference (Result),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Negative;
 	
@@ -175,9 +175,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_add (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Add;
 	
@@ -188,9 +188,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_sub (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Subtract;
 	
@@ -201,9 +201,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_mul (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Multiply;
 	
@@ -214,9 +214,9 @@ package body GMP.Root_F is
 	begin
 		return Result : MP_Float (Precision) do
 			C.gmp.mpf_div (
-				Reference (Result),
-				Constant_Reference (Left),
-				Constant_Reference (Right));
+				Controlled.Reference (Result),
+				Controlled.Constant_Reference (Left),
+				Controlled.Constant_Reference (Right));
 		end return;
 	end Divide;
 	
@@ -227,24 +227,33 @@ package body GMP.Root_F is
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
-			if Right >= 0 then
-				C.gmp.mpf_pow_ui (
-					Reference (Result),
-					Constant_Reference (Left),
-					C.unsigned_long'Mod (Right));
-			else
-				declare
-					Den : aliased C.gmp.mpf_t := (others => (others => <>));
-				begin
-					C.gmp.mpf_init2 (Den (0)'Access, C.gmp.mp_bitcnt_t (Precision));
+			declare
+				Raw_Result : constant not null access C.gmp.mpf_struct :=
+					Controlled.Reference (Result);
+				Raw_Left : constant not null access constant C.gmp.mpf_struct :=
+					Controlled.Constant_Reference (Left);
+			begin
+				if Right >= 0 then
 					C.gmp.mpf_pow_ui (
-						Den (0)'Access,
-						Constant_Reference (Left),
+						Raw_Result,
+						Raw_Left,
 						C.unsigned_long'Mod (Right));
-					C.gmp.mpf_ui_div (Reference (Result), 1, Den (0)'Access);
-					C.gmp.mpf_clear (Den (0)'Access);
-				end;
-			end if;
+				else
+					declare
+						Den : aliased C.gmp.mpf_t := (others => (others => <>));
+					begin
+						C.gmp.mpf_init2 (
+							Den (0)'Access,
+							C.gmp.mp_bitcnt_t (Precision));
+						C.gmp.mpf_pow_ui (
+							Den (0)'Access,
+							Raw_Left,
+							C.unsigned_long'Mod (Right));
+						C.gmp.mpf_ui_div (Raw_Result, 1, Den (0)'Access);
+						C.gmp.mpf_clear (Den (0)'Access);
+					end;
+				end if;
+			end;
 		end return;
 	end Power;
 	
@@ -257,16 +266,16 @@ package body GMP.Root_F is
 			end return;
 		end Create;
 		
-		function Reference (Item : in out MP_Float)
+		function Reference (Item : in out Root_F.MP_Float)
 			return not null access C.gmp.mpf_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return Item.Data.Raw (0)'Unchecked_Access;
 		end Reference;
 		
-		function Constant_Reference (Item : MP_Float)
+		function Constant_Reference (Item : Root_F.MP_Float)
 			return not null access constant C.gmp.mpf_struct is
 		begin
-			return Item.Raw (0)'Unchecked_Access;
+			return Item.Data.Raw (0)'Unchecked_Access;
 		end Constant_Reference;
 		
 		overriding procedure Initialize (Object : in out MP_Float) is
@@ -291,17 +300,5 @@ package body GMP.Root_F is
 		end Finalize;
 		
 	end Controlled;
-	
-	function Reference (Item : in out MP_Float)
-		return not null access C.gmp.mpf_struct is
-	begin
-		return Controlled.Reference (Item.Data);
-	end Reference;
-	
-	function Constant_Reference (Item : MP_Float)
-		return not null access constant C.gmp.mpf_struct is
-	begin
-		return Controlled.Constant_Reference (Item.Data);
-	end Constant_Reference;
 	
 end GMP.Root_F;
