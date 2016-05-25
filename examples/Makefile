@@ -18,8 +18,9 @@ BINLN=
 endif
 
 GFLAGS=
-CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3chbs
-MFLAGS=-D $(BUILDDIR)
+CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3chbs \
+	$(addprefix -gnatec=,$(abspath $(wildcard *.adc)))
+MFLAGS=-D $(BUILDDIR) -gnatA
 BFLAGS=-E
 LFLAGS=-ggdb
 
