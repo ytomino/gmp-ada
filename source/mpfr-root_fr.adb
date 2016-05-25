@@ -113,7 +113,7 @@ package body MPFR.Root_FR is
 		Rounding : MPFR.Rounding)
 		return MP_Float
 	is
-		Z_Image : constant String := Image & Character'Val (0);
+		Z_Image : aliased constant String := Image & Character'Val (0);
 		C_Image : C.char_array (0 .. Z_Image'Length);
 		for C_Image'Address use Z_Image'Address;
 	begin

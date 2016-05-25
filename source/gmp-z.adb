@@ -23,7 +23,7 @@ package body GMP.Z is
 			Controlled.Constant_Reference (Value);
 		Buffer_Size : constant C.size_t :=
 			C.gmp.mpz_sizeinbase (Raw_Value, C.signed_int (Base)) + 2;
-		Buffer : C.char_array (0 .. Buffer_Size);
+		Buffer : aliased C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr;
 	begin
 		Dummy := C.gmp.mpz_get_str (
@@ -41,7 +41,7 @@ package body GMP.Z is
 	end Image;
 	
 	function Value (Image : String; Base : Number_Base := 10) return MP_Integer is
-		Z_Image : constant String := Image & Character'Val (0);
+		Z_Image : aliased constant String := Image & Character'Val (0);
 		C_Image : C.char_array (0 .. Z_Image'Length);
 		for C_Image'Address use Z_Image'Address;
 	begin
@@ -314,7 +314,8 @@ package body GMP.Z is
 					(System.Storage_Elements.Storage_Offset (abs_xsize)
 						* C.gmp.GMP_NUMB_BITS + 7)
 					/ 8;
-				tp : System.Storage_Elements.Storage_Array (0 .. tsize - 1);
+				tp : aliased
+					System.Storage_Elements.Storage_Array (0 .. tsize - 1);
 				bp : System.Storage_Elements.Storage_Offset := 0;
 				bytes : aliased C.size_t;
 				Dummy : C.void_ptr;

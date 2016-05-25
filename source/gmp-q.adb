@@ -32,7 +32,7 @@ package body GMP.Q is
 			C.gmp.mpz_sizeinbase (Raw_Value.mp_num'Access, C.signed_int (Base))
 			+ C.gmp.mpz_sizeinbase (Raw_Value.mp_den'Access, C.signed_int (Base))
 			+ 2;
-		Buffer : C.char_array (0 .. Buffer_Size);
+		Buffer : aliased C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr;
 	begin
 		Dummy := C.gmp.mpq_get_str (
@@ -52,7 +52,7 @@ package body GMP.Q is
 	function Value (Image : String; Base : Number_Base := 10)
 		return MP_Rational
 	is
-		Z_Image : constant String := Image & Character'Val (0);
+		Z_Image : aliased constant String := Image & Character'Val (0);
 		C_Image : C.char_array (0 .. Z_Image'Length);
 		for C_Image'Address use Z_Image'Address;
 	begin

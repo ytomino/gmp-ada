@@ -104,7 +104,7 @@ package body MPC.Root_C is
 		Rounding : MPC.Rounding)
 		return MP_Complex
 	is
-		Z_Image : constant String := Image & Character'Val (0);
+		Z_Image : aliased constant String := Image & Character'Val (0);
 		C_Image : C.char_array (0 .. Z_Image'Length);
 		for C_Image'Address use Z_Image'Address;
 	begin

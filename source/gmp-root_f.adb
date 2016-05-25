@@ -90,7 +90,7 @@ package body GMP.Root_F is
 		Precision : GMP.Precision)
 		return MP_Float
 	is
-		Z_Image : constant String := Image & Character'Val (0);
+		Z_Image : aliased constant String := Image & Character'Val (0);
 		C_Image : C.char_array (0 .. Z_Image'Length);
 		for C_Image'Address use Z_Image'Address;
 		First : C.size_t := C_Image'First;
