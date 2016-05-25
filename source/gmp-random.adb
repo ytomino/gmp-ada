@@ -73,11 +73,15 @@ package body GMP.Random is
 	package body Discrete_Random is
 		
 		function Random (Gen : aliased in out Generator) return Result_Subtype is
+			Result_Width : constant C.unsigned_long :=
+				Result_Subtype'Pos (Result_Subtype'Last)
+				- Result_Subtype'Pos (Result_Subtype'First)
+				+ 1;
 		begin
 			return Result_Subtype'Val (
 				C.gmp.gmp_urandomm_ui (
 					Controlled.Reference (Gen.State),
-					Result_Subtype'Range_Length)
+					Result_Width)
 				+ Result_Subtype'Pos (Result_Subtype'First));
 		end Random;
 		
