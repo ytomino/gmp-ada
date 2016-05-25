@@ -241,10 +241,22 @@ package body GMP.Q is
 	
 	package body Controlled is
 		
+		function View_Reference (Item : in out MP_Rational)
+			return not null access C.gmp.mpq_struct;
+		pragma Inline (View_Reference);
+		
+		function View_Reference (Item : in out MP_Rational)
+			return not null access C.gmp.mpq_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end View_Reference;
+		
+		-- implementation
+		
 		function Reference (Item : in out Q.MP_Rational)
 			return not null access C.gmp.mpq_struct is
 		begin
-			return MP_Rational (Item).Raw (0)'Unrestricted_Access;
+			return View_Reference (MP_Rational (Item)); -- view conversion
 		end Reference;
 		
 		function Constant_Reference (Item : Q.MP_Rational)

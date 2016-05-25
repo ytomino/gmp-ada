@@ -85,10 +85,22 @@ package body GMP.Random is
 	
 	package body Controlled is
 		
+		function View_Reference (Item : in out State)
+			return not null access C.gmp.gmp_randstate_struct;
+		pragma Inline (View_Reference);
+		
+		function View_Reference (Item : in out State)
+			return not null access C.gmp.gmp_randstate_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end View_Reference;
+		
+		-- implementation
+		
 		function Reference (Item : in out GMP.Random.State)
 			return not null access C.gmp.gmp_randstate_struct is
 		begin
-			return State (Item).Raw (0)'Unrestricted_Access;
+			return View_Reference (State (Item)); -- view conversion
 		end Reference;
 		
 		function Constant_Reference (Item : GMP.Random.State)

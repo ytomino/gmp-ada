@@ -190,10 +190,22 @@ package body GMP.Z is
 	
 	package body Controlled is
 		
+		function View_Reference (Item : in out MP_Integer)
+			return not null access C.gmp.mpz_struct;
+		pragma Inline (View_Reference);
+		
+		function View_Reference (Item : in out MP_Integer)
+			return not null access C.gmp.mpz_struct is
+		begin
+			return Item.Raw (0)'Unchecked_Access;
+		end View_Reference;
+		
+		-- implementation
+		
 		function Reference (Item : in out Z.MP_Integer)
 			return not null access C.gmp.mpz_struct is
 		begin
-			return MP_Integer (Item).Raw (0)'Unrestricted_Access;
+			return View_Reference (MP_Integer (Item)); -- view conversion
 		end Reference;
 		
 		function Constant_Reference (Item : Z.MP_Integer)
