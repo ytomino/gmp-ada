@@ -11,6 +11,12 @@ package body GMP.Z is
 	use type C.size_t;
 	use type C.gmp.mp_size_t;
 	
+	procedure memcpy (dst, src : System.Address; n : C.size_t)
+		with Import,
+			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+	
+	-- implementation
+	
 	function To_MP_Integer (X : Long_Long_Integer) return MP_Integer is
 	begin
 		return Result : MP_Integer do
@@ -41,10 +47,11 @@ package body GMP.Z is
 	end Image;
 	
 	function Value (Image : String; Base : Number_Base := 10) return MP_Integer is
-		Z_Image : aliased constant String := Image & Character'Val (0);
-		C_Image : C.char_array (0 .. Z_Image'Length);
-		for C_Image'Address use Z_Image'Address;
+		Image_Length : constant C.size_t := Image'Length;
+		C_Image : C.char_array (0 .. Image_Length); -- NUL
 	begin
+		memcpy (C_Image'Address, Image'Address, Image_Length);
+		C_Image (Image_Length) := C.char'Val (0);
 		return Result : MP_Integer do
 			if C.gmp.mpz_set_str (
 				Controlled.Reference (Result),

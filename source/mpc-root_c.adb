@@ -1,9 +1,16 @@
 pragma Ada_2012;
 with MPFR.Root_FR.Inside;
+with System;
 with C.mpfr;
 with C.string;
 package body MPC.Root_C is
 	use type C.signed_int;
+	
+	procedure memcpy (dst, src : System.Address; n : C.size_t)
+		with Import,
+			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+	
+	-- implementation
 	
 	function Re (X : MP_Complex) return MPFR.Root_FR.MP_Float is
 		Source : C.mpfr.mpfr_t renames Controlled.Constant_Reference (X).re;
@@ -104,10 +111,11 @@ package body MPC.Root_C is
 		Rounding : MPC.Rounding)
 		return MP_Complex
 	is
-		Z_Image : aliased constant String := Image & Character'Val (0);
-		C_Image : C.char_array (0 .. Z_Image'Length);
-		for C_Image'Address use Z_Image'Address;
+		Image_Length : constant C.size_t := Image'Length;
+		C_Image : C.char_array (0 .. Image_Length); -- NUL
 	begin
+		memcpy (C_Image'Address, Image'Address, Image_Length);
+		C_Image (Image_Length) := C.char'Val (0);
 		return Result : MP_Complex (Real_Precision, Imaginary_Precision) do
 			if C.mpc.mpc_set_str (
 				Controlled.Reference (Result),

@@ -1,9 +1,16 @@
 pragma Ada_2012;
+with System;
 with GMP.Z.Inside;
 with C.string;
 package body GMP.Q is
 	use type C.signed_int;
 	use type C.size_t;
+	
+	procedure memcpy (dst, src : System.Address; n : C.size_t)
+		with Import,
+			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+	
+	-- implementation
 	
 	function Num (X : MP_Rational) return Z.MP_Integer is
 	begin
@@ -52,10 +59,11 @@ package body GMP.Q is
 	function Value (Image : String; Base : Number_Base := 10)
 		return MP_Rational
 	is
-		Z_Image : aliased constant String := Image & Character'Val (0);
-		C_Image : C.char_array (0 .. Z_Image'Length);
-		for C_Image'Address use Z_Image'Address;
+		Image_Length : constant C.size_t := Image'Length;
+		C_Image : C.char_array (0 .. Image_Length); -- NUL
 	begin
+		memcpy (C_Image'Address, Image'Address, Image_Length);
+		C_Image (Image_Length) := C.char'Val (0);
 		return Result : MP_Rational do
 			declare
 				Raw_Result : constant not null access C.gmp.mpq_struct :=

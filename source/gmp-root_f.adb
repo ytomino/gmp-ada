@@ -1,5 +1,6 @@
 pragma Ada_2012;
 with Ada.Unchecked_Conversion;
+with System;
 with C.stdlib;
 with C.string;
 package body GMP.Root_F is
@@ -7,6 +8,12 @@ package body GMP.Root_F is
 	use type C.signed_int;
 	use type C.size_t;
 	use type C.gmp.mp_bitcnt_t;
+	
+	procedure memcpy (dst, src : System.Address; n : C.size_t)
+		with Import,
+			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+	
+	-- implementation
 	
 	function To_MP_Float (
 		X : Long_Float;
@@ -90,11 +97,12 @@ package body GMP.Root_F is
 		Precision : GMP.Precision)
 		return MP_Float
 	is
-		Z_Image : aliased constant String := Image & Character'Val (0);
-		C_Image : C.char_array (0 .. Z_Image'Length);
-		for C_Image'Address use Z_Image'Address;
+		Image_Length : constant C.size_t := Image'Length;
+		C_Image : C.char_array (0 .. Image_Length); -- NUL
 		First : C.size_t := C_Image'First;
 	begin
+		memcpy (C_Image'Address, Image'Address, Image_Length);
+		C_Image (Image_Length) := C.char'Val (0);
 		if C_Image (First) = '+' then
 			First := First + 1;
 		end if;
