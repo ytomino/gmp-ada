@@ -6,14 +6,14 @@ TARGET=$(HOST)
 BUILDDIR=$(TARGET).build
 
 ifeq ($(TARGET),$(HOST))
-GNATPREFIX=
-GCC=
+GCCPREFIX=
 BINLN=bin
 else
-GNATPREFIX=$(TARGET)-
-GCC=$(TARGET)-gcc
+GCCPREFIX=$(TARGET)-
 BINLN=
 endif
+GCCSUFFIX=
+GCC=$(GCCPREFIX)gcc$(GCCSUFFIX)
 
 GFLAGS=
 CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3chbs \
@@ -23,7 +23,7 @@ BFLAGS=-E
 LFLAGS=-ggdb
 
 ifneq ($(DRAKE_RTSROOT),)
-VERSION:=$(shell gcc -dumpversion)
+VERSION:=$(shell $(GCC) -dumpversion)
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
@@ -34,7 +34,7 @@ IMPORTDIR=$(BUILDDIR)/import
 MFLAGS+=-I$(IMPORTDIR)
 endif
 
-ifneq ($(GCC),)
+ifneq ($(GCC),gcc)
 GFLAGS+=$(filter -m32 -m64,$(GCC))
 MFLAGS+=--GCC="$(GCC)"
 LFLAGS+=--GCC="$(GCC)"
@@ -48,9 +48,9 @@ EXAMPLES=$(basename $(filter-out b~%,$(wildcard *.adb)))
 all: $(EXAMPLES)
 
 $(BUILDDIR)/%: %.adb $(wildcard $(SOURCEDIR)/*) | $(BUILDDIR) $(IMPORTDIR)
-	$(GNATPREFIX)gnatmake -c -I$(SOURCEDIR) $< $(GFLAGS) $(MFLAGS) -cargs $(CFLAGS)
-	cd $(BUILDDIR) && $(GNATPREFIX)gnatmake -b $(basename $(notdir $<)).ali $(GFLAGS) -bargs $(BFLAGS)
-	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GFLAGS) $(LFLAGS)
+	$(GCCPREFIX)gnatmake$(GCCSUFFIX) -c -I$(SOURCEDIR) $< $(GFLAGS) $(MFLAGS) -cargs $(CFLAGS)
+	cd $(BUILDDIR) && $(GCCPREFIX)gnatbind$(GCCSUFFIX) $(basename $(notdir $<)).ali $(GFLAGS) $(BFLAGS)
+	cd $(BUILDDIR) && $(GCCPREFIX)gnatlink$(GCCSUFFIX) -o ../$@ $(basename $(notdir $<)).ali $(GFLAGS) $(LFLAGS)
 
 $(BUILDDIR)/test_pi: LFLAGS+=-lgmp
 
