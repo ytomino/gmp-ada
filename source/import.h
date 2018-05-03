@@ -22,4 +22,8 @@
 #if __FreeBSD__ >= 9
 #pragma for Ada "stdint.h" include "sys/_stdint.h"
 #endif
+#elif defined(__gnu_linux__)
+#if __GLIBC_PREREQ(2, 26)
+#pragma for Ada "stdint.h" include "bits/stdint-intn.h"
+#endif
 #endif
