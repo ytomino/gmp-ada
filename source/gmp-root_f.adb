@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with Ada.Unchecked_Conversion;
 with System;
 with C.stdlib;

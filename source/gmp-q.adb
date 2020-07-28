@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with System;
 with GMP.Z.Inside;
 with C.string;

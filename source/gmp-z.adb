@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with System.Storage_Elements;
 with C.stdint;
 with C.string;

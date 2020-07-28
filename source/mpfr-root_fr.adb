@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with System;
 with C.string;
 package body MPFR.Root_FR is

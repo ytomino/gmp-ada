@@ -1,4 +1,3 @@
-pragma Ada_2012;
 private with Ada.Finalization;
 package MPFR.Root_FR is
 	pragma Preelaborate;

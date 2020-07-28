@@ -1,4 +1,3 @@
-pragma Ada_2012;
 package body GMP.Random is
 	use type C.unsigned_long;
 

@@ -1,4 +1,3 @@
-pragma Ada_2012;
 private with Ada.Finalization;
 package GMP.Root_F is
 	pragma Preelaborate;

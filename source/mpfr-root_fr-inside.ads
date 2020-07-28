@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with C.mpfr;
 package MPFR.Root_FR.Inside is
 	pragma Preelaborate;

@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with MPFR.Root_FR.Inside;
 with System;
 with C.mpfr;

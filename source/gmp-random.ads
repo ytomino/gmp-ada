@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with Ada.Finalization;
 private with C.gmp;
 package GMP.Random is

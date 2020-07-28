@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with GMP.Z;
 private with Ada.Finalization;
 private with Ada.Streams;

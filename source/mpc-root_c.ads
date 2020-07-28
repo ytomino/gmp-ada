@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with MPFR.Root_FR;
 private with Ada.Finalization;
 package MPC.Root_C is

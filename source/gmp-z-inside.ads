@@ -1,4 +1,3 @@
-pragma Ada_2012;
 with Ada.Streams;
 with C.gmp;
 package GMP.Z.Inside is

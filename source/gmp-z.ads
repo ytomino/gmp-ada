@@ -1,4 +1,3 @@
-pragma Ada_2012;
 private with Ada.Finalization;
 private with Ada.Streams;
 package GMP.Z is
