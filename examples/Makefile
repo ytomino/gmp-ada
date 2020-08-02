@@ -3,7 +3,7 @@ SOURCEDIR=../source
 HOST:=$(shell gcc -dumpmachine)
 TARGET=$(HOST)
 
-BUILDDIR=$(TARGET).build
+BUILDDIR=$(TARGET).noindex
 
 ifeq ($(TARGET),$(HOST))
 GCCPREFIX=
@@ -69,4 +69,4 @@ $(IMPORTDIR): $(SOURCEDIR)/import.h
 endif
 
 clean:
-	-rm -rf *.build bin
+	-rm -rf *.noindex bin
