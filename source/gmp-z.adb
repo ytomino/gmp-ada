@@ -2,8 +2,6 @@ with System.Storage_Elements;
 with C.stdint;
 with C.string;
 package body GMP.Z is
-	use type Ada.Streams.Stream_Element;
-	use type Ada.Streams.Stream_Element_Offset;
 	use type System.Storage_Elements.Storage_Element;
 	use type System.Storage_Elements.Storage_Offset;
 	use type C.signed_int;
