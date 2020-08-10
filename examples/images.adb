@@ -29,8 +29,7 @@ begin
 	Q := 5 / 7;
 	F := To_MP_Float (5.0 / 7.0);
 	FR := To_MP_Float (5.0 / 7.0);
-	-- C := 1.0 - 2.0 * i; -- [gcc-4.7] compiler's bug
-	C := Compose (To_MP_Float (1.0), To_MP_Float (-2.0));
+	C := 1.0 - 2.0 * i;
 	pragma Assert (Image (Z) = "99");
 	pragma Assert (Image (Q) = "5/7");
 	pragma Assert (Image (F) = "0.714285714285714301575");

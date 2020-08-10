@@ -10,7 +10,6 @@ package body MPC.Generic_C is
 	end Rounding;
 	
 	function i return MP_Imaginary is
-		pragma Suppress (Discriminant_Check); -- [4.6] compiler bug ?
 	begin
 		return To_MP_Float (1.0);
 	end i;
@@ -135,9 +134,7 @@ package body MPC.Generic_C is
 	end "**";
 	
 	function "*" (Left : Long_Long_Float; Right : MP_Imaginary)
-		return MP_Imaginary
-	is
-		pragma Suppress (Discriminant_Check); -- [4.6] compiler bug ?
+		return MP_Imaginary is
 	begin
 		return MP_Imaginary (Left * Imaginary_FR.MP_Float (Right));
 	end "*";
