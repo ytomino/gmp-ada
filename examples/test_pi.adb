@@ -138,9 +138,8 @@ begin
 	exception
 		when Constraint_Error =>
 			Ada.Text_IO.Put_Line (
-				"usage: " &
-				Ada.Command_Line.Command_Name &
-				" precision(10-) output-flag(0-1)");
+				"usage: " & Ada.Command_Line.Command_Name
+					& " precision(10-) output-flag(0-1)");
 			Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
 			return;
 	end;
@@ -157,8 +156,7 @@ begin
 	mpf_pi (pi);
 	stop := Ada.Real_Time.Clock;
 	Ada.Text_IO.Put_Line (
-		Duration'Image (Ada.Real_Time.To_Duration (stop - start)) &
-		" sec.");
+		Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 	if output /= 0 then
 		declare
 			fmt : C.char_array := "%.*Ff" & C.char'Val (10) & C.char'Val (0);
@@ -167,8 +165,7 @@ begin
 		end;
 		stop := Ada.Real_Time.Clock;
 		Ada.Text_IO.Put_Line (
-			Duration'Image (Ada.Real_Time.To_Duration (stop - start)) &
-			" sec.");
+			Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 	end if;
 	mpf_clear (pi (0)'Access);
 end test_pi;

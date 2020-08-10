@@ -30,13 +30,11 @@ package GMP.Z is
 	-- binary adding operators
 	
 	function "+" (Left, Right : MP_Integer) return MP_Integer;
-	
 	function "-" (Left, Right : MP_Integer) return MP_Integer;
 	
 	-- multiplying operators
 	
 	function "*" (Left, Right : MP_Integer) return MP_Integer;
-	
 	function "/" (Left, Right : MP_Integer) return MP_Integer;
 	
 	-- highest precedence operators
@@ -65,9 +63,10 @@ private
 		
 	private
 		
-		type MP_Integer is new Ada.Finalization.Controlled with record
-			Raw : aliased C.gmp.mpz_t := (others => (others => <>));
-		end record;
+		type MP_Integer is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.gmp.mpz_t := (others => (others => <>));
+			end record;
 		
 		overriding procedure Initialize (Object : in out MP_Integer);
 		overriding procedure Adjust (Object : in out MP_Integer);

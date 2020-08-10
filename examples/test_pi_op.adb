@@ -43,8 +43,8 @@ procedure test_pi_op is
 	function mpf_pi return MPF.MP_Float;
 	function mpf_pi return MPF.MP_Float is
 		use type MPF.MP_Float;
-		SQRT_SQRT_EPSILON : constant MPF.MP_Float := MPF.To_MP_Float (1.0)
-			/ MPF.To_MP_Float (2.0) ** (Integer (MPF.Precision) - 4);
+		SQRT_SQRT_EPSILON : constant MPF.MP_Float :=
+			MPF.To_MP_Float (1.0) / MPF.To_MP_Float (2.0) ** (Integer (MPF.Precision) - 4);
 		c : MPF.MP_Float := MPF.Sqrt (MPF.To_MP_Float (0.125));
 		a : MPF.MP_Float := 1.0 + 3.0 * c;
 		b : MPF.MP_Float := MPF.Sqrt (a);
@@ -90,9 +90,8 @@ begin
 	exception
 		when Constraint_Error =>
 			Ada.Text_IO.Put_Line (
-				"usage: " &
-				Ada.Command_Line.Command_Name &
-				" precision(10-) output-flag(0-1)");
+				"usage: " & Ada.Command_Line.Command_Name
+					& " precision(10-) output-flag(0-1)");
 			Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
 			return;
 	end;
@@ -111,14 +110,12 @@ begin
 		pi := mpf_pi;
 		stop := Ada.Real_Time.Clock;
 		Ada.Text_IO.Put_Line (
-			Duration'Image (Ada.Real_Time.To_Duration (stop - start)) &
-			" sec.");
+			Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 		if output /= 0 then
 			Ada.Text_IO.Put_Line (MPF.Image (pi));
 			stop := Ada.Real_Time.Clock;
 			Ada.Text_IO.Put_Line (
-				Duration'Image (Ada.Real_Time.To_Duration (stop - start)) &
-				" sec.");
+				Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 		end if;
 	end;
 end test_pi_op;

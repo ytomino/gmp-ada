@@ -43,12 +43,11 @@ private
 		
 	private
 		
-		type State is new Ada.Finalization.Controlled with record
-			Raw : aliased C.gmp.gmp_randstate_t := (
-				others => (
-					mp_seed => (others => (others => <>)),
-					others => <>));
-		end record;
+		type State is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.gmp.gmp_randstate_t :=
+					(others => (mp_seed => (others => (others => <>)), others => <>));
+			end record;
 		
 		overriding procedure Initialize (Object : in out State);
 		overriding procedure Adjust (Object : in out State);

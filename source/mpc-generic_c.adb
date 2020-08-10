@@ -24,26 +24,18 @@ package body MPC.Generic_C is
 		return Imaginary_FR.MP_Float (Root_C.Im (Root_C.MP_Complex (X)));
 	end Im;
 	
-	function Compose (
-		Re : Real_FR.MP_Float;
-		Im : Imaginary_FR.MP_Float)
+	function Compose (Re : Real_FR.MP_Float; Im : Imaginary_FR.MP_Float)
 		return MP_Complex is
 	begin
 		return Compose (MPFR.Root_FR.MP_Float (Re), MPFR.Root_FR.MP_Float (Im));
 	end Compose;
 	
-	function Image (
-		Value : MP_Complex;
-		Base : Number_Base := 10)
-		return String is
+	function Image (Value : MP_Complex; Base : Number_Base := 10) return String is
 	begin
 		return Image (Value, Base, Rounding);
 	end Image;
 	
-	function Value (
-		Image : String;
-		Base : Number_Base := 10)
-		return MP_Complex is
+	function Value (Image : String; Base : Number_Base := 10) return MP_Complex is
 	begin
 		return Value (
 			Image => Image,

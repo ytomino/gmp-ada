@@ -10,9 +10,7 @@ package MPFR.Root_FR is
 		Rounding : MPFR.Rounding)
 		return MP_Float;
 	
-	function To_Long_Long_Float (
-		X : MP_Float;
-		Rounding : MPFR.Rounding)
+	function To_Long_Long_Float (X : MP_Float; Rounding : MPFR.Rounding)
 		return Long_Long_Float;
 	
 	function Image (
@@ -50,34 +48,29 @@ package MPFR.Root_FR is
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Add (
 		Left : MP_Float;
 		Right : Long_Long_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Add (
 		Left : Long_Long_Float;
 		Right : MP_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Subtract (
 		Left, Right : MP_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Subtract (
 		Left : MP_Float;
 		Right : Long_Long_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Subtract (
 		Left : Long_Long_Float;
 		Right : MP_Float;
@@ -90,34 +83,29 @@ package MPFR.Root_FR is
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Multiply (
 		Left : MP_Float;
 		Right : Long_Long_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Multiply (
 		Left : Long_Long_Float;
 		Right : MP_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-
 	function Divide (
 		Left, Right : MP_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Divide (
 		Left : MP_Float;
 		Right : Long_Long_Float;
 		Precision : MPFR.Precision;
 		Rounding : MPFR.Rounding)
 		return MP_Float;
-	
 	function Divide (
 		Left : Long_Long_Float;
 		Right : MP_Float;
@@ -138,13 +126,9 @@ package MPFR.Root_FR is
 		Rounding : MPFR.Rounding)
 		return MP_Float;
 	
-	function NaN (
-		Precision : MPFR.Precision)
-		return MP_Float;
+	function NaN (Precision : MPFR.Precision) return MP_Float;
 	
-	function Infinity (
-		Precision : MPFR.Precision)
-		return MP_Float;
+	function Infinity (Precision : MPFR.Precision) return MP_Float;
 	
 private
 	
@@ -164,9 +148,10 @@ private
 		
 	private
 		
-		type MP_Float is new Ada.Finalization.Controlled with record
-			Raw : aliased C.mpfr.mpfr_t := (others => (others => <>));
-		end record;
+		type MP_Float is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.mpfr.mpfr_t := (others => (others => <>));
+			end record;
 		
 		overriding procedure Initialize (Object : in out MP_Float);
 		overriding procedure Adjust (Object : in out MP_Float);

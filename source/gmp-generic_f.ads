@@ -16,15 +16,9 @@ package GMP.Generic_F is
 	
 	-- formatting
 	
---	function Image (
---		Value : MP_Float;
---		Base : Number_Base := 10)
---		return String;
+--	function Image (Value : MP_Float; Base : Number_Base := 10) return String;
 	-- this function is inherited
-	function Value (
-		Image : String;
-		Base : Number_Base := 10)
-		return MP_Float;
+	function Value (Image : String; Base : Number_Base := 10) return MP_Float;
 	
 	pragma Inline (Value);
 	

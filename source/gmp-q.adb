@@ -6,8 +6,7 @@ package body GMP.Q is
 	use type C.size_t;
 	
 	procedure memcpy (dst, src : System.Address; n : C.size_t)
-		with Import,
-			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+		with Import, Convention => Intrinsic, External_Name => "__builtin_memcpy";
 	
 	-- implementation
 	
@@ -29,22 +28,21 @@ package body GMP.Q is
 		end return;
 	end Den;
 	
-	function Image (Value : MP_Rational; Base : Number_Base := 10)
-		return String
-	is
+	function Image (Value : MP_Rational; Base : Number_Base := 10) return String is
 		Raw_Value : constant not null access constant C.gmp.mpq_struct :=
 			Controlled.Constant_Reference (Value);
 		Buffer_Size : constant C.size_t :=
 			C.gmp.mpz_sizeinbase (Raw_Value.mp_num'Access, C.signed_int (Base))
-			+ C.gmp.mpz_sizeinbase (Raw_Value.mp_den'Access, C.signed_int (Base))
-			+ 2;
+				+ C.gmp.mpz_sizeinbase (Raw_Value.mp_den'Access, C.signed_int (Base))
+				+ 2;
 		Buffer : aliased C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr;
 	begin
-		Dummy := C.gmp.mpq_get_str (
-			Buffer (Buffer'First)'Access,
-			C.signed_int (Base),
-			Raw_Value);
+		Dummy :=
+			C.gmp.mpq_get_str (
+				Buffer (Buffer'First)'Access,
+				C.signed_int (Base),
+				Raw_Value);
 		declare
 			Length : constant Natural :=
 				Natural (C.string.strlen (Buffer (Buffer'First)'Access));
@@ -55,9 +53,7 @@ package body GMP.Q is
 		end;
 	end Image;
 	
-	function Value (Image : String; Base : Number_Base := 10)
-		return MP_Rational
-	is
+	function Value (Image : String; Base : Number_Base := 10) return MP_Rational is
 		Image_Length : constant C.size_t := Image'Length;
 		C_Image : C.char_array (0 .. Image_Length); -- NUL
 	begin
@@ -218,27 +214,15 @@ package body GMP.Q is
 					declare
 						E : constant C.unsigned_long := C.unsigned_long'Mod (Right);
 					begin
-						C.gmp.mpz_pow_ui (
-							Raw_Result.mp_num'Access,
-							Raw_Left.mp_num'Access,
-							E);
-						C.gmp.mpz_pow_ui (
-							Raw_Result.mp_den'Access,
-							Raw_Left.mp_den'Access,
-							E);
+						C.gmp.mpz_pow_ui (Raw_Result.mp_num'Access, Raw_Left.mp_num'Access, E);
+						C.gmp.mpz_pow_ui (Raw_Result.mp_den'Access, Raw_Left.mp_den'Access, E);
 					end;
 				else
 					declare
 						E : constant C.unsigned_long := C.unsigned_long'Mod (-Right);
 					begin
-						C.gmp.mpz_pow_ui (
-							Raw_Result.mp_num'Access,
-							Raw_Left.mp_den'Access,
-							E);
-						C.gmp.mpz_pow_ui (
-							Raw_Result.mp_den'Access,
-							Raw_Left.mp_num'Access,
-							E);
+						C.gmp.mpz_pow_ui (Raw_Result.mp_num'Access, Raw_Left.mp_den'Access, E);
+						C.gmp.mpz_pow_ui (Raw_Result.mp_den'Access, Raw_Left.mp_num'Access, E);
 					end;
 				end if;
 				C.gmp.mpq_canonicalize (Raw_Result);

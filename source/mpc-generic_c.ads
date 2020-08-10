@@ -10,9 +10,8 @@ package MPC.Generic_C is
 	
 	pragma Inline (Rounding);
 	
-	type MP_Complex is new Root_C.MP_Complex (
-		Real_FR.Precision,
-		Imaginary_FR.Precision);
+	type MP_Complex is
+		new Root_C.MP_Complex (Real_FR.Precision, Imaginary_FR.Precision);
 	
 	type MP_Imaginary is private;
 	
@@ -27,23 +26,15 @@ package MPC.Generic_C is
 	pragma Inline (Re);
 	pragma Inline (Im);
 	
-	function Compose (
-		Re : Real_FR.MP_Float;
-		Im : Imaginary_FR.MP_Float)
+	function Compose (Re : Real_FR.MP_Float; Im : Imaginary_FR.MP_Float)
 		return MP_Complex;
 	
 	pragma Inline (Compose);
 	
 	-- formatting
 	
-	function Image (
-		Value : MP_Complex;
-		Base : Number_Base := 10)
-		return String;
-	function Value (
-		Image : String;
-		Base : Number_Base := 10)
-		return MP_Complex;
+	function Image (Value : MP_Complex; Base : Number_Base := 10) return String;
+	function Value (Image : String; Base : Number_Base := 10) return MP_Complex;
 	
 	pragma Inline (Image);
 	pragma Inline (Value);

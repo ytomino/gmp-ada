@@ -9,8 +9,7 @@ package body GMP.Z is
 	use type C.gmp.mp_size_t;
 	
 	procedure memcpy (dst, src : System.Address; n : C.size_t)
-		with Import,
-			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+		with Import, Convention => Intrinsic, External_Name => "__builtin_memcpy";
 	
 	-- implementation
 	
@@ -29,10 +28,11 @@ package body GMP.Z is
 		Buffer : aliased C.char_array (0 .. Buffer_Size);
 		Dummy : C.char_ptr;
 	begin
-		Dummy := C.gmp.mpz_get_str (
-			Buffer (Buffer'First)'Access,
-			C.signed_int (Base),
-			Raw_Value);
+		Dummy :=
+			C.gmp.mpz_get_str (
+				Buffer (Buffer'First)'Access,
+				C.signed_int (Base),
+				Raw_Value);
 		declare
 			Length : constant Natural :=
 				Natural (C.string.strlen (Buffer (Buffer'First)'Access));
@@ -277,8 +277,9 @@ package body GMP.Z is
 			csize_bytes : C.stdint.int32_t; -- 4 bytes for size
 		begin
 			C.stdint.int32_t'Read (Stream, csize_bytes);
-			csize := System.Storage_Elements.Storage_Offset ( -- sign extending
-				Convert_BE (csize_bytes));
+			csize :=
+				System.Storage_Elements.Storage_Offset ( -- sign extending
+					Convert_BE (csize_bytes));
 		end;
 		if csize /= 0 then
 			declare
@@ -315,23 +316,22 @@ package body GMP.Z is
 			declare
 				abs_xsize : constant C.gmp.mp_size_t := abs xsize;
 				tsize : constant System.Storage_Elements.Storage_Offset :=
-					(System.Storage_Elements.Storage_Offset (abs_xsize)
-						* C.gmp.GMP_NUMB_BITS + 7)
-					/ 8;
-				tp : aliased
-					System.Storage_Elements.Storage_Array (0 .. tsize - 1);
+					(System.Storage_Elements.Storage_Offset (abs_xsize) * C.gmp.GMP_NUMB_BITS + 7)
+						/ 8;
+				tp : aliased System.Storage_Elements.Storage_Array (0 .. tsize - 1);
 				bp : System.Storage_Elements.Storage_Offset := 0;
 				bytes : aliased C.size_t;
 				Dummy : C.void_ptr;
 			begin
-				Dummy := C.gmp.mpz_export (
-					C.void_ptr (tp'Address),
-					bytes'Access,
-					1, -- big endian in array
-					1, -- word size
-					1, -- big endian in word
-					0, -- no padding
-					Item);
+				Dummy :=
+					C.gmp.mpz_export (
+						C.void_ptr (tp'Address),
+						bytes'Access,
+						1, -- big endian in array
+						1, -- word size
+						1, -- big endian in word
+						0, -- no padding
+						Item);
 				-- strip high zero bytes (without fetching from bp)
 				declare
 					zeros : System.Storage_Elements.Storage_Offset := 0;

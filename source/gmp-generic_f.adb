@@ -5,10 +5,7 @@ package body GMP.Generic_F is
 		return To_MP_Float (X, Precision);
 	end To_MP_Float;
 	
-	function Value (
-		Image : String;
-		Base : Number_Base := 10)
-		return MP_Float is
+	function Value (Image : String; Base : Number_Base := 10) return MP_Float is
 	begin
 		return Value (Image, Base, Precision);
 	end Value;

@@ -4,17 +4,12 @@ package GMP.Root_F is
 	
 	type MP_Float (Precision : GMP.Precision) is private;
 	
-	function To_MP_Float (
-		X : Long_Float;
-		Precision : GMP.Precision)
+	function To_MP_Float (X : Long_Float; Precision : GMP.Precision)
 		return MP_Float;
 	
 	function To_Long_Float (X : MP_Float) return Long_Float;
 	
-	function Image (
-		Value : MP_Float;
-		Base : Number_Base := 10)
-		return String;
+	function Image (Value : MP_Float; Base : Number_Base := 10) return String;
 	function Value (
 		Image : String;
 		Base : Number_Base := 10;
@@ -32,35 +27,20 @@ package GMP.Root_F is
 		Precision : GMP.Precision := Default_Precision)
 		return MP_Float;
 	
-	function Negative (
-		Right : MP_Float;
-		Precision : GMP.Precision)
+	function Negative (Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float;
 	
-	function Add (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Add (Left, Right : MP_Float; Precision : GMP.Precision)
+		return MP_Float;
+	function Subtract (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float;
 	
-	function Subtract (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Multiply (Left, Right : MP_Float; Precision : GMP.Precision)
+		return MP_Float;
+	function Divide (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float;
 	
-	function Multiply (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
-		return MP_Float;
-	
-	function Divide (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
-		return MP_Float;
-	
-	function Power (
-		Left : MP_Float;
-		Right : Integer;
-		Precision : GMP.Precision)
+	function Power (Left : MP_Float; Right : Integer; Precision : GMP.Precision)
 		return MP_Float;
 	
 private
@@ -81,9 +61,10 @@ private
 		
 	private
 		
-		type MP_Float is new Ada.Finalization.Controlled with record
-			Raw : aliased C.gmp.mpf_t := (others => (others => <>));
-		end record;
+		type MP_Float is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.gmp.mpf_t := (others => (others => <>));
+			end record;
 		
 		overriding procedure Initialize (Object : in out MP_Float);
 		overriding procedure Adjust (Object : in out MP_Float);

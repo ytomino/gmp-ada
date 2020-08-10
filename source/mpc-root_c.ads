@@ -56,7 +56,6 @@ package MPC.Root_C is
 		Imaginary_Precision : MPFR.Precision;
 		Rounding : MPC.Rounding)
 		return MP_Complex;
-	
 	function Subtract (
 		Left, Right : MP_Complex;
 		Real_Precision : MPFR.Precision;
@@ -70,7 +69,6 @@ package MPC.Root_C is
 		Imaginary_Precision : MPFR.Precision;
 		Rounding : MPC.Rounding)
 		return MP_Complex;
-	
 	function Divide (
 		Left, Right : MP_Complex;
 		Real_Precision : MPFR.Precision;
@@ -107,10 +105,11 @@ private
 		
 	private
 		
-		type MP_Complex is new Ada.Finalization.Controlled with record
-			Raw : aliased C.mpc.mpc_t :=
-				(others => (others => (others => (others => <>))));
-		end record;
+		type MP_Complex is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.mpc.mpc_t :=
+					(others => (others => (others => (others => <>))));
+			end record;
 		
 		overriding procedure Initialize (Object : in out MP_Complex);
 		overriding procedure Adjust (Object : in out MP_Complex);

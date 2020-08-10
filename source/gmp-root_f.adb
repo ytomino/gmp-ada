@@ -9,20 +9,15 @@ package body GMP.Root_F is
 	use type C.gmp.mp_bitcnt_t;
 	
 	procedure memcpy (dst, src : System.Address; n : C.size_t)
-		with Import,
-			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+		with Import, Convention => Intrinsic, External_Name => "__builtin_memcpy";
 	
 	-- implementation
 	
-	function To_MP_Float (
-		X : Long_Float;
-		Precision : GMP.Precision)
+	function To_MP_Float (X : Long_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
-			C.gmp.mpf_set_d (
-				Controlled.Reference (Result),
-				C.double (X));
+			C.gmp.mpf_set_d (Controlled.Reference (Result), C.double (X));
 		end return;
 	end To_MP_Float;
 	
@@ -31,24 +26,21 @@ package body GMP.Root_F is
 		return Long_Float (C.gmp.mpf_get_d (Controlled.Constant_Reference (X)));
 	end To_Long_Float;
 	
-	function Image (
-		Value : MP_Float;
-		Base : Number_Base := 10)
-		return String
-	is
+	function Image (Value : MP_Float; Base : Number_Base := 10) return String is
 		function Cast is new Ada.Unchecked_Conversion (C.char_ptr, C.void_ptr);
 		Exponent : aliased C.gmp.mp_exp_t;
-		Image : constant C.char_ptr := C.gmp.mpf_get_str (
-			null,
-			Exponent'Access,
-			C.signed_int (Base),
-			0,
-			Controlled.Constant_Reference (Value));
+		Image : constant C.char_ptr :=
+			C.gmp.mpf_get_str (
+				null,
+				Exponent'Access,
+				C.signed_int (Base),
+				0,
+				Controlled.Constant_Reference (Value));
 		Length : constant Natural := Integer (C.string.strlen (Image));
 		Ada_Image : String (1 .. Length);
 		for Ada_Image'Address use Image.all'Address;
-		Sign_Width : constant Natural := Boolean'Pos (
-			Length > 0 and then Ada_Image (1) = '-');
+		Sign_Width : constant Natural :=
+			Boolean'Pos (Length > 0 and then Ada_Image (1) = '-');
 		Exponent_P : constant Natural := Integer (Exponent) + Sign_Width;
 	begin
 		if Length = 0 then
@@ -80,8 +72,8 @@ package body GMP.Root_F is
 					Result (Result'First + Sign_Width) := '0';
 					Result (Result'First + Sign_Width + 1) := '.';
 					Result (
-						Result'First + Sign_Width + 2 ..
-						Result'First + Sign_Width + Zero_Width + 1) := (others => '0');
+							Result'First + Sign_Width + 2 .. Result'First + Sign_Width + Zero_Width + 1) :=
+						(others => '0');
 					Result (Result'First + Sign_Width + Zero_Width + 2 .. Result'Last) :=
 						Ada_Image (Ada_Image'First + Sign_Width .. Ada_Image'Last);
 					C.stdlib.free (Cast (Image));
@@ -163,9 +155,7 @@ package body GMP.Root_F is
 		end return;
 	end Copy;
 	
-	function Negative (
-		Right : MP_Float;
-		Precision : GMP.Precision)
+	function Negative (Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -175,9 +165,7 @@ package body GMP.Root_F is
 		end return;
 	end Negative;
 	
-	function Add (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Add (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -188,9 +176,7 @@ package body GMP.Root_F is
 		end return;
 	end Add;
 	
-	function Subtract (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Subtract (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -201,9 +187,7 @@ package body GMP.Root_F is
 		end return;
 	end Subtract;
 	
-	function Multiply (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Multiply (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -214,9 +198,7 @@ package body GMP.Root_F is
 		end return;
 	end Multiply;
 	
-	function Divide (
-		Left, Right : MP_Float;
-		Precision : GMP.Precision)
+	function Divide (Left, Right : MP_Float; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -227,10 +209,7 @@ package body GMP.Root_F is
 		end return;
 	end Divide;
 	
-	function Power (
-		Left : MP_Float;
-		Right : Integer;
-		Precision : GMP.Precision)
+	function Power (Left : MP_Float; Right : Integer; Precision : GMP.Precision)
 		return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
@@ -241,21 +220,13 @@ package body GMP.Root_F is
 					Controlled.Constant_Reference (Left);
 			begin
 				if Right >= 0 then
-					C.gmp.mpf_pow_ui (
-						Raw_Result,
-						Raw_Left,
-						C.unsigned_long'Mod (Right));
+					C.gmp.mpf_pow_ui (Raw_Result, Raw_Left, C.unsigned_long'Mod (Right));
 				else
 					declare
 						Den : aliased C.gmp.mpf_t := (others => (others => <>));
 					begin
-						C.gmp.mpf_init2 (
-							Den (0)'Access,
-							C.gmp.mp_bitcnt_t (Precision));
-						C.gmp.mpf_pow_ui (
-							Den (0)'Access,
-							Raw_Left,
-							C.unsigned_long'Mod (Right));
+						C.gmp.mpf_init2 (Den (0)'Access, C.gmp.mp_bitcnt_t (Precision));
+						C.gmp.mpf_pow_ui (Den (0)'Access, Raw_Left, C.unsigned_long'Mod (Right));
 						C.gmp.mpf_ui_div (Raw_Result, 1, Den (0)'Access);
 						C.gmp.mpf_clear (Den (0)'Access);
 					end;
@@ -293,9 +264,7 @@ package body GMP.Root_F is
 		overriding procedure Adjust (Object : in out MP_Float) is
 			Source : constant C.gmp.mpf_t := Object.Raw; -- move
 		begin
-			C.gmp.mpf_init_set (
-				Object.Raw (0)'Access,
-				Source (0)'Access);
+			C.gmp.mpf_init_set (Object.Raw (0)'Access, Source (0)'Access);
 			pragma Assert (
 				C.gmp.gmpf_get_prec (Object.Raw (0)'Access) =
 				C.gmp.gmpf_get_prec (Source (0)'Access));

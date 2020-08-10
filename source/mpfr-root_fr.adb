@@ -4,8 +4,7 @@ package body MPFR.Root_FR is
 	use type C.signed_int;
 	
 	procedure memcpy (dst, src : System.Address; n : C.size_t)
-		with Import,
-			Convention => Intrinsic, External_Name => "__builtin_memcpy";
+		with Import, Convention => Intrinsic, External_Name => "__builtin_memcpy";
 	
 	-- implementation
 	
@@ -18,16 +17,15 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_set_ld (
-				Controlled.Reference (Result),
-				C.long_double (X),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Controlled.Reference (Result),
+					C.long_double (X),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end To_MP_Float;
 	
-	function To_Long_Long_Float (
-		X : MP_Float;
-		Rounding : MPFR.Rounding)
+	function To_Long_Long_Float (X : MP_Float; Rounding : MPFR.Rounding)
 		return Long_Long_Float is
 	begin
 		return Long_Long_Float (C.mpfr.mpfr_get_ld (
@@ -57,18 +55,19 @@ package body MPFR.Root_FR is
 		else
 			declare
 				Exponent : aliased C.mpfr.mpfr_exp_t;
-				Image : constant C.char_ptr := C.mpfr.mpfr_get_str (
-					null,
-					Exponent'Access,
-					C.signed_int (Base),
-					0,
-					Raw_Value,
-					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+				Image : constant C.char_ptr :=
+					C.mpfr.mpfr_get_str (
+						null,
+						Exponent'Access,
+						C.signed_int (Base),
+						0,
+						Raw_Value,
+						C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 				Length : constant Natural := Integer (C.string.strlen (Image));
 				Ada_Image : String (1 .. Length);
 				for Ada_Image'Address use Image.all'Address;
-				Sign_Width : constant Natural := Boolean'Pos (
-					Length > 0 and then Ada_Image (1) = '-');
+				Sign_Width : constant Natural :=
+					Boolean'Pos (Length > 0 and then Ada_Image (1) = '-');
 				Exponent_P : constant Natural := Integer (Exponent) + Sign_Width;
 			begin
 				if Length = 0 then
@@ -100,8 +99,8 @@ package body MPFR.Root_FR is
 							Result (Result'First + Sign_Width) := '0';
 							Result (Result'First + Sign_Width + 1) := '.';
 							Result (
-								Result'First + Sign_Width + 2 ..
-								Result'First + Sign_Width + Zero_Width + 1) := (others => '0');
+									Result'First + Sign_Width + 2 .. Result'First + Sign_Width + Zero_Width + 1) :=
+								(others => '0');
 							Result (Result'First + Sign_Width + Zero_Width + 2 .. Result'Last) :=
 								Ada_Image (Ada_Image'First + Sign_Width .. Ada_Image'Last);
 							C.mpfr.mpfr_free_str (Image);
@@ -180,11 +179,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_set4 (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)),
-				+1);
+			Dummy :=
+				C.mpfr.mpfr_set4 (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)),
+					+1);
 		end return;
 	end Copy;
 	
@@ -197,10 +197,11 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_neg (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_neg (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Negative;
 	
@@ -213,11 +214,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_add (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_add (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Add;
 	
@@ -233,15 +235,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Right2 (0)'Access,
-				C.long_double (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_add (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Right2 (0)'Access,
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Right2 (0)'Access,
+					C.long_double (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_add (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Right2 (0)'Access,
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Right2 (0)'Access);
 		end return;
 	end Add;
@@ -265,11 +269,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_sub (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_sub (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Subtract;
 	
@@ -285,15 +290,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Right2 (0)'Access,
-				C.long_double (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_sub (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Right2 (0)'Access,
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Right2 (0)'Access,
+					C.long_double (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_sub (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Right2 (0)'Access,
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Right2 (0)'Access);
 		end return;
 	end Subtract;
@@ -310,15 +317,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Left2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Left2 (0)'Access,
-				C.long_double (Left),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_sub (
-				Controlled.Reference (Result),
-				Left2 (0)'Access,
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Left2 (0)'Access,
+					C.long_double (Left),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_sub (
+					Controlled.Reference (Result),
+					Left2 (0)'Access,
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Left2 (0)'Access);
 		end return;
 	end Subtract;
@@ -332,11 +341,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_mul (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_mul (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Multiply;
 	
@@ -352,15 +362,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Right2 (0)'Access,
-				C.long_double (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_mul (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Right2 (0)'Access,
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Right2 (0)'Access,
+					C.long_double (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_mul (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Right2 (0)'Access,
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Right2 (0)'Access);
 		end return;
 	end Multiply;
@@ -384,11 +396,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_div (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_div (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Divide;
 	
@@ -404,15 +417,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Right2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Right2 (0)'Access,
-				C.long_double (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_div (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				Right2 (0)'Access,
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Right2 (0)'Access,
+					C.long_double (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_div (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					Right2 (0)'Access,
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Right2 (0)'Access);
 		end return;
 	end Divide;
@@ -429,15 +444,17 @@ package body MPFR.Root_FR is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_init2 (Left2 (0)'Access, C.mpfr.mpfr_prec_t (Precision));
-			Dummy := C.mpfr.mpfr_set_ld (
-				Left2 (0)'Access,
-				C.long_double (Left),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
-			Dummy := C.mpfr.mpfr_div (
-				Controlled.Reference (Result),
-				Left2 (0)'Access,
-				Controlled.Constant_Reference (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_set_ld (
+					Left2 (0)'Access,
+					C.long_double (Left),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_div (
+					Controlled.Reference (Result),
+					Left2 (0)'Access,
+					Controlled.Constant_Reference (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 			C.mpfr.mpfr_clear (Left2 (0)'Access);
 		end return;
 	end Divide;
@@ -452,11 +469,12 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_pow_si (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (Left),
-				C.signed_long (Right),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_pow_si (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (Left),
+					C.signed_long (Right),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Power;
 	
@@ -469,25 +487,22 @@ package body MPFR.Root_FR is
 		Dummy : C.signed_int;
 	begin
 		return Result : MP_Float (Precision) do
-			Dummy := C.mpfr.mpfr_sqrt (
-				Controlled.Reference (Result),
-				Controlled.Constant_Reference (X),
-				C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
+			Dummy :=
+				C.mpfr.mpfr_sqrt (
+					Controlled.Reference (Result),
+					Controlled.Constant_Reference (X),
+					C.mpfr.mpfr_rnd_t'Enum_Val (MPFR.Rounding'Enum_Rep (Rounding)));
 		end return;
 	end Sqrt;
 	
-	function NaN (
-		Precision : MPFR.Precision)
-		return MP_Float is
+	function NaN (Precision : MPFR.Precision) return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_set_nan (Controlled.Reference (Result));
 		end return;
 	end NaN;
 	
-	function Infinity (
-		Precision : MPFR.Precision)
-		return MP_Float is
+	function Infinity (Precision : MPFR.Precision) return MP_Float is
 	begin
 		return Result : MP_Float (Precision) do
 			C.mpfr.mpfr_set_inf (Controlled.Reference (Result), 0);
@@ -529,11 +544,12 @@ package body MPFR.Root_FR is
 			C.mpfr.mpfr_init2 (
 				Object.Raw (0)'Access,
 				C.mpfr.mpfr_get_prec (Source (0)'Access));
-			Dummy := C.mpfr.mpfr_set4 (
-				Object.Raw (0)'Access,
-				Source (0)'Access,
-				C.mpfr.MPFR_RNDN,
-				C.mpfr.mpfr_sgn (Source (0)'Access));
+			Dummy :=
+				C.mpfr.mpfr_set4 (
+					Object.Raw (0)'Access,
+					Source (0)'Access,
+					C.mpfr.MPFR_RNDN,
+					C.mpfr.mpfr_sgn (Source (0)'Access));
 		end Adjust;
 		
 		overriding procedure Finalize (Object : in out MP_Float) is

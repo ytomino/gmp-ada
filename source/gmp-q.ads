@@ -11,10 +11,8 @@ package GMP.Q is
 	
 	-- formatting
 	
-	function Image (Value : MP_Rational; Base : Number_Base := 10)
-		return String;
-	function Value (Image : String; Base : Number_Base := 10)
-		return MP_Rational;
+	function Image (Value : MP_Rational; Base : Number_Base := 10) return String;
+	function Value (Image : String; Base : Number_Base := 10) return MP_Rational;
 	
 	-- relational operators
 	
@@ -32,13 +30,11 @@ package GMP.Q is
 	-- binary adding operators
 	
 	function "+" (Left, Right : MP_Rational) return MP_Rational;
-	
 	function "-" (Left, Right : MP_Rational) return MP_Rational;
 	
 	-- multiplying operators
 	
 	function "*" (Left, Right : MP_Rational) return MP_Rational;
-	
 	function "/" (Left, Right : MP_Rational) return MP_Rational;
 	function "/" (Left, Right : Long_Long_Integer) return MP_Rational;
 	function "/" (Left, Right : Z.MP_Integer) return MP_Rational;
@@ -63,9 +59,10 @@ private
 		
 	private
 		
-		type MP_Rational is new Ada.Finalization.Controlled with record
-			Raw : aliased C.gmp.mpq_t := (others => (others => (others => <>)));
-		end record;
+		type MP_Rational is new Ada.Finalization.Controlled
+			with record
+				Raw : aliased C.gmp.mpq_t := (others => (others => (others => <>)));
+			end record;
 		
 		overriding procedure Initialize (Object : in out MP_Rational);
 		overriding procedure Adjust (Object : in out MP_Rational);
