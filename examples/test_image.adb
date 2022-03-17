@@ -5,7 +5,6 @@ with GMP.FR;
 with GMP.C;
 with Ada.Text_IO;
 procedure test_image is
-	use Ada.Text_IO;
 	package Default_F is new GMP.F;
 	package Default_FR is new GMP.FR;
 	package Default_C is new GMP.C (Default_FR, Default_FR);
@@ -54,5 +53,6 @@ begin
 	pragma Assert (Image (Infinity) = "INF");
 	pragma Assert (Image (-Infinity) = "-INF");
 	pragma Assert (Image (C) = "(1.2000000000000000 1.3999999999999999)");
-	pragma Debug (Put_Line ("ok"));
+	-- finish
+	Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error.all, "ok");
 end test_image;
