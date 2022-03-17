@@ -6,14 +6,16 @@ What's this?
 
 Ada binding to the multiple precision arithmetic libraries GMP, MPFR and MPC.
 
-Depending tools and libraries
------------------------------
+Prerequisites
+-------------
 
-GMP
+GCC >= 4.7
+ https://gcc.gnu.org/
+GMP >= 4.3
  http://gmplib.org/
-MPFR
+MPFR >= 3.0
  http://www.mpfr.org/
-MPC
+MPC >= 0.9
  http://www.multiprecision.org/
 headmaster
  http://github.com/ytomino/headmaster
