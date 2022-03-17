@@ -23,16 +23,37 @@ headmaster
 Usage
 -----
 
-1. Translate the C headers with headmaster. ::
-   
-    $ headmaster --to ada -p -D import-dir gmp-ada/source/import.h
+1. Prepare the translated headers.
+
+   A. Translate the C headers with headmaster. ::
+
+       $ headmaster --to ada -p -D import-dir gmp-ada/source/import.h
+      
+      However, it may not work well in your environment.
+      The plan B is recommended.
+
+   B. Download them from `pre-translated headers page`_.
 
 2. Add the source directories of gmp-ada and the translated headers
    to search path for gnatmake. ::
-   
+
     $ gnatmake -Igmp-ada/source -Iimport-dir your_main.adb
    
    Or please write .gpr file for your environment.
+
+Build examples
+--------------
+
+1. Link the translated headers to `examples/import`. ::
+
+    $ mkdir gmp-ada/examples/import
+    $ ln -s $PWD/import-dir gmp-ada/examples/import/$(gcc -dumpmachine)
+   
+   If this step is omitted, headmaster will be used.
+
+2. Build them. ::
+
+    $ make -C gmp-ada/examples
 
 License
 -------
@@ -80,3 +101,5 @@ Please apply LGPLv3 when static linking libgmp.a, libmpfr.a or libmpc.a.
  
  You should have received a copy of the GNU Lesser General Public License
  along with gmp-ada.  If not, see <http://www.gnu.org/licenses/>.
+
+.. _`pre-translated headers page`: https://github.com/ytomino/gmp-ada/wiki/Pre-translated-headers
