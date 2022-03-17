@@ -30,7 +30,11 @@ ifneq ($(DRAKE_RTSDIR),)
 IMPORTDIR=
 GFLAGS+=--RTS=$(abspath $(DRAKE_RTSDIR))
 else
+ifneq ($(wildcard import/$(TARGET)),)
+IMPORTDIR=import/$(TARGET)
+else
 IMPORTDIR=$(BUILDDIR)/import
+endif
 MFLAGS+=-I$(IMPORTDIR)
 endif
 
