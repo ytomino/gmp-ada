@@ -56,7 +56,7 @@ $(BUILDDIR)/%: %.adb $(wildcard $(SOURCEDIR)/*) | $(BUILDDIR) $(IMPORTDIR)
 	cd $(BUILDDIR) && $(GCCPREFIX)gnatbind$(GCCSUFFIX) $(basename $(notdir $<)).ali $(GFLAGS) $(BFLAGS)
 	cd $(BUILDDIR) && $(GCCPREFIX)gnatlink$(GCCSUFFIX) -o ../$@ $(basename $(notdir $<)).ali $(GFLAGS) $(LFLAGS)
 
-$(BUILDDIR)/test_pi: LFLAGS+=-lgmp
+$(BUILDDIR)/pi: LFLAGS+=-lgmp
 
 $(BUILDDIR):
 	mkdir $(BUILDDIR)

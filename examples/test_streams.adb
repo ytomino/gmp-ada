@@ -2,7 +2,7 @@ with Ada.Streams.Stream_IO;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 with GMP.Z;
-procedure Stream is
+procedure test_streams is
 	use Ada.Streams.Stream_IO;
 	use Ada.Strings;
 	use Ada.Strings.Fixed;
@@ -47,4 +47,4 @@ begin
 	test (-65535);
 	test (Long_Long_Integer'First);
 	test (Long_Long_Integer'Last);
-end Stream;
+end test_streams;

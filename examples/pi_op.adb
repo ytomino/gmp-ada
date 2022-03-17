@@ -3,7 +3,7 @@ with Ada.Command_Line;
 with Ada.Real_Time;
 with Ada.Text_IO;
 with MPFR.Generic_FR;
-procedure test_pi_op is
+procedure pi_op is
 	use type Ada.Real_Time.Time;
 	use type MPFR.Precision;
 	
@@ -99,7 +99,7 @@ begin
 		package MPF is new MPFR.Generic_FR (
 			MPFR.Precision (Long_Long_Float (2 + prec10) * LOG_2_10 + 1.0),
 			MPFR.Default_Rounding);
-		function mpf_pi is new test_pi_op.mpf_pi (MPF);
+		function mpf_pi is new pi_op.mpf_pi (MPF);
 		pi : MPF.MP_Float;
 	begin
 		stop := Ada.Real_Time.Clock;
@@ -118,4 +118,4 @@ begin
 				Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 		end if;
 	end;
-end test_pi_op;
+end pi_op;

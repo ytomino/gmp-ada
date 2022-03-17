@@ -3,7 +3,7 @@ with Ada.Command_Line;
 with Ada.Real_Time;
 with Ada.Text_IO;
 with C.gmp;
-procedure test_pi is
+procedure pi is
 	use type Ada.Real_Time.Time;
 	use C;
 	use C.gmp;
@@ -168,4 +168,4 @@ begin
 			Duration'Image (Ada.Real_Time.To_Duration (stop - start)) & " sec.");
 	end if;
 	mpf_clear (pi (0)'Access);
-end test_pi;
+end pi;
