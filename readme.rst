@@ -23,11 +23,11 @@ headmaster
 Usage
 -----
 
-1. Translate C headers with headmaster. ::
+1. Translate the C headers with headmaster. ::
    
     $ headmaster --to ada -p -D import-dir gmp-ada/source/import.h
 
-2. Add source directories of gmp-ada and translated headers
+2. Add the source directories of gmp-ada and the translated headers
    to search path for gnatmake. ::
    
     $ gnatmake -Igmp-ada/source -Iimport-dir your_main.adb
