@@ -21,6 +21,20 @@ CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3cbhms \
 MFLAGS=-D $(BUILDDIR) -gnatA
 BFLAGS=-E
 LFLAGS=-ggdb
+HFLAGS=
+
+ifeq ($(TARGET),$(HOST))
+WITH_GMP?=
+ifneq ($(WITH_GMP),)
+GMP_LFLAGS=-L$(WITH_GMP)/lib
+GMP_HFLAGS=-I$(WITH_GMP)/include
+else
+GMP_LFLAGS:=$(shell pkg-config --libs-only-L gmp)
+GMP_HFLAGS:=$(shell pkg-config --cflags-only-I gmp)
+endif
+LFLAGS+=$(GMP_LFLAGS)
+HFLAGS+=$(GMP_HFLAGS)
+endif
 
 ifneq ($(DRAKE_RTSROOT),)
 VERSION:=$(shell $(GCC) -dumpversion)
