@@ -5,12 +5,12 @@ TARGET=$(HOST)
 
 BUILDDIR=$(TARGET).noindex
 
-ifeq ($(TARGET),$(HOST))
- GCCPREFIX=
- BINLN=bin
-else
+ifneq ($(TARGET),$(HOST))
  GCCPREFIX=$(TARGET)-
  BINLN=
+else
+ GCCPREFIX=
+ BINLN=bin
 endif
 GCCSUFFIX=
 GCC=$(GCCPREFIX)gcc$(GCCSUFFIX)
