@@ -16,9 +16,8 @@ GCCSUFFIX=
 GCC=$(GCCPREFIX)gcc$(GCCSUFFIX)
 
 GFLAGS=
-CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3cbhms \
-	$(addprefix -gnatec=,$(wildcard *.adc))
-MFLAGS=-D $(BUILDDIR) -gnatA
+CFLAGS=-ggdb -pipe -gnatef -gnata -gnatwa -gnatyy-3cbhms
+MFLAGS=-D $(BUILDDIR) -gnatA $(addprefix -gnatec=,$(wildcard *.adc))
 BFLAGS=-E
 LFLAGS=-ggdb
 HFLAGS=
